@@ -65,7 +65,7 @@ test('увеличение начинается сразу, идёт посте�
   await expect(page.locator('video')).toHaveCount(1);
 });
 
-test('мягкая жидкая маска не даёт пустых кадров при увеличении и обратной прокрутке', async ({ page }) => {
+test('чёткие края без растушёвки и пустых кадров при увеличении и обратной прокрутке', async ({ page }) => {
   await ready(page);
   const result = await page.evaluate(() => new Promise<{ blank: number; samples: number; softPixels: number }>(resolve => {
     const video = document.querySelector('video')!;
@@ -103,13 +103,13 @@ test('мягкая жидкая маска не даёт пустых кадро
   }));
   expect(result.samples).toBeGreaterThan(5);
   expect(result.blank).toBe(0);
-  expect(result.softPixels).toBeGreaterThan(8);
+  expect(result.softPixels).toBeLessThanOrEqual(4);
   await expect(page.locator('.project-floating')).toHaveAttribute('data-liquid', 'ready');
 });
 
-test('30% деформации сохраняют сплошную читаемую видеоповерхность при резком движении', async ({ page }) => {
+test('половина интенсивности фотоэталона сохраняет видимое видео при резком движении', async ({ page }) => {
   await ready(page);
-  await expect(page.locator('.project-floating')).toHaveAttribute('data-intensity', '30');
+  await expect(page.locator('.project-floating')).toHaveAttribute('data-intensity', '43');
   for (const [x, y] of [[100, 120], [1300, 800], [200, 700], [1200, 150], [300, 500]]) {
     await page.mouse.move(x, y, { steps: 2 });
     await page.waitForTimeout(80);

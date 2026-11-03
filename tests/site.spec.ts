@@ -47,7 +47,7 @@ test('вступление, следование за курсором, жидк
   for (let x = 420; x <= 1000; x += 80) await page.mouse.move(x, 350 + (x % 160), { steps: 2 });
   const disturbed = await sampleImage(page);
   expect(disturbed.row).not.toEqual(rest.row);
-  expect(disturbed.content).toEqual(rest.content);
+  expect(disturbed.content).not.toEqual(rest.content);
   await expect.poll(async () => (await image.boundingBox())!.x).toBeGreaterThan(650);
   await page.locator('video').evaluate(video => video.play());
   await page.evaluate(() => scrollTo({ top: document.querySelector('.hero')!.clientHeight, behavior: 'instant' }));

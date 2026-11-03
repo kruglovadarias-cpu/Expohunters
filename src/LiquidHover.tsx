@@ -10,7 +10,7 @@ interface Props {
   resolution: number;
   cursorSize: number;
   intensity: number;
-  feather: number;
+  referenceIntensity: number;
 }
 interface Target {
   texture: WebGLTexture;
@@ -22,7 +22,7 @@ interface Target {
 interface DoubleTarget { read: Target; write: Target; swap: () => void }
 interface Program { program: WebGLProgram; uniforms: Record<string, WebGLUniformLocation | null> }
 
-export default function LiquidHover({ videoRef, motionRef, resolution, cursorSize, intensity, feather }: Props) {
+export default function LiquidHover({ videoRef, motionRef, resolution, cursorSize, intensity, referenceIntensity }: Props) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   useEffect(() => {
     const canvas = canvasRef.current!;
@@ -194,7 +194,9 @@ export default function LiquidHover({ videoRef, motionRef, resolution, cursorSiz
           gl.uniform1f(splat.uniforms.u_point_size, radius * radius);
           draw(velocity.write); velocity.swap();
           gl.uniform1i(splat.uniforms.u_input_texture, output.read.attach(1));
-          const power = 5 + ((intensity / 100 - .1) * 45) / .9;
+          // То же поле, что в примере с фотографией. Половинный коэффициент
+          // применяется один раз в финальном смещении, а не второй раз здесь.
+          const power = referenceIntensity / 2;
           gl.uniform3f(splat.uniforms.u_point_value, power * .001, 0, 0);
           draw(output.write); output.swap();
         }
@@ -229,8 +231,8 @@ export default function LiquidHover({ videoRef, motionRef, resolution, cursorSiz
       gl.uniform1f(display.uniforms.u_ratio, width / height);
       gl.uniform1f(display.uniforms.u_img_ratio, imageAspect);
       gl.uniform1f(display.uniforms.u_disturb_power, intensity / 100 * strength);
-      gl.uniform2f(display.uniforms.u_frame_texel, 1 / width, 1 / height);
-      gl.uniform1f(display.uniforms.u_feather, feather * (.5 + .5 * strength));
+      // Один пиксель сглаживания контура без растушёвки при любом размере.
+      gl.uniform2f(display.uniforms.u_frame_texel, 1 / (canvas.width * 5 / 6), 1 / (canvas.height * 5 / 6));
       gl.uniform1f(display.uniforms.u_canvas_scale, 1);
       gl.uniform1f(display.uniforms.u_inner_scale, 5 / 6);
       gl.activeTexture(gl.TEXTURE0); gl.bindTexture(gl.TEXTURE_2D, imageTexture);
@@ -245,6 +247,6 @@ export default function LiquidHover({ videoRef, motionRef, resolution, cursorSiz
       canvas.removeEventListener('webglcontextlost', onLost);
       dispose();
     };
-  }, [videoRef, motionRef, resolution, cursorSize, intensity, feather]);
+  }, [videoRef, motionRef, resolution, cursorSize, intensity, referenceIntensity]);
   return <canvas ref={canvasRef} className="liquid-canvas" aria-hidden="true" />;
 }

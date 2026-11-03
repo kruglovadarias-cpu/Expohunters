@@ -148,6 +148,7 @@ export default function HeroMedia({ hero, ready, paused, reduced }: Props) {
     <video ref={video} className="project-video" src={site.projectVideo} aria-label={site.projectVideoLabel}
       muted loop playsInline preload="auto" autoPlay={ready && !paused && !reduced} controls={reduced} />
     {ready && !reduced && finePointer && <LiquidHover videoRef={video} motionRef={liquidMotion}
-      resolution={motion.liquidResolution} cursorSize={motion.liquidRadius} intensity={motion.liquidIntensity} feather={motion.liquidFeather} />}
+      resolution={motion.liquidResolution} cursorSize={motion.liquidRadius}
+      intensity={motion.liquidIntensity} referenceIntensity={motion.liquidReferenceIntensity} />}
   </div></div>;
 }

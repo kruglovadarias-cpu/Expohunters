@@ -1,0 +1,10 @@
+{
+  "sourceFileName": "index.html",
+  "sourceSha256": "05ae929c2d0cb703870c0d8d2e994362dccbf3387e2b4ce1306dcc971a259a9c",
+  "referenceIntensity": 86,
+  "requestedGain": 0.5,
+  "appliedIntensity": 43.0,
+  "fluidFieldIntensity": 86,
+  "contentToContourDisplacementRatio": 2,
+  "notes": "Preserve the reference fluid input; apply the half gain once to the final content and contour displacement. No feathering or blur."
+}

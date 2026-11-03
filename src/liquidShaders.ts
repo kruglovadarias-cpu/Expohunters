@@ -154,7 +154,6 @@ uniform vec2 u_point;
 uniform float u_canvas_scale;
 uniform float u_inner_scale;
 uniform vec2 u_frame_texel;
-uniform float u_feather;
 
 vec2 get_img_uv() {
   vec2 uv = vUv - 0.5;
@@ -181,9 +180,8 @@ vec2 get_frame_uv() {
 }
 
 float get_img_frame_alpha(vec2 uv) {
-  vec2 feather = u_frame_texel * u_feather;
-  vec2 start = smoothstep(-feather, feather, uv);
-  vec2 end = 1. - smoothstep(1. - feather, 1. + feather, uv);
+  vec2 start = smoothstep(vec2(0.), u_frame_texel, uv);
+  vec2 end = 1. - smoothstep(1. - u_frame_texel, vec2(1.), uv);
   return start.x * start.y * end.x * end.y;
 }
 
@@ -193,13 +191,14 @@ vec3 sample_image(vec2 uv) {
 }
 
 void main () {
-  float offset = clamp(texture2D(u_output_texture, vUv).r, 0., .1);
+  float offset = max(texture2D(u_output_texture, vUv).r, 0.);
 
   vec2 velocity = texture2D(u_velocity_texture, vUv).xy;
   vec2 img_uv = get_img_uv();
-  // Жидкость меняет мягкую маску, а содержимое видео остаётся стабильным.
-  // У затухающей скорости направление плавно исчезает, а не дрожит normalize(0).
-  vec2 displacement = u_disturb_power * velocity / max(length(velocity), 4.) * offset;
+  // Как у фотографии из присланного HTML: содержимое смещается вдвое сильнее
+  // контура. При затухании убираем дрожание направления возле нулевой скорости.
+  vec2 displacement = u_disturb_power * velocity / max(length(velocity), 1.) * offset;
+  img_uv -= displacement * 2.;
 
   vec2 frame_uv = get_frame_uv();
   frame_uv -= displacement;

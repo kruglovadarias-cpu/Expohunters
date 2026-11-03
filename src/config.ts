@@ -10,16 +10,18 @@ export const site = {
   socials: { WA: '', TG: '', MAX: '' },
 };
 
+// В присланном index.html у фотографии значение 86. Смещение уменьшаем вдвое.
+const photoReferenceIntensity = 86;
 export const motion = {
   introDuration: 1100,
   revealDuration: 1500,
   marqueeSpeed: 78, // пикселей в секунду
   followerWidth: 368,
   followerSmoothing: 0.085,
-  liquidIntensity: 30,
+  liquidReferenceIntensity: photoReferenceIntensity,
+  liquidIntensity: photoReferenceIntensity * .5,
   liquidResolution: 2,
   liquidRadius: 95,
-  liquidFeather: 6, // мягкий край маски, пиксели в каждую сторону
   controlGap: 24,
   scrollSmoothing: 95, // миллисекунды, без задержки начала увеличения
 };
