@@ -51,9 +51,9 @@ test('вступление, следование за курсором, жидк
   await page.evaluate(() => scrollTo({ top: document.querySelector('.hero')!.clientHeight, behavior: 'instant' }));
   await expect(image).toHaveAttribute('data-mode', 'scroll');
   await expect.poll(async () => (await image.boundingBox())!.width).toBeGreaterThan(1360);
-  const expanded = (await image.boundingBox())!;
-  expect(expanded.x).toBeCloseTo(20, 0);
-  expect(expanded.y).toBeCloseTo(36, 0);
+  // Сглаживание ещё может доводить рамку после достижения нужной ширины.
+  await expect.poll(async () => (await image.boundingBox())!.x).toBeCloseTo(20, 0);
+  await expect.poll(async () => (await image.boundingBox())!.y).toBeCloseTo(36, 0);
   await page.screenshot({ path: 'test-results/second-screen.png' });
   await page.evaluate(() => scrollTo({ top: 0, behavior: 'instant' }));
   await expect(image).toHaveAttribute('data-mode', 'follow');
