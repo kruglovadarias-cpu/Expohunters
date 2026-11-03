@@ -27,8 +27,8 @@ function Arrow({ diagonal = false }: { diagonal?: boolean }) {
 
 function MarqueeUnit({ duplicate = false }: { duplicate?: boolean }) {
   return <div className="marquee-unit" aria-hidden={duplicate || undefined}>
-    {duplicate ? <div className="headline">ВЫСТАВОЧНЫЕ<br />СТЕНДЫ</div> : <h1 className="headline">ВЫСТАВОЧНЫЕ<br />СТЕНДЫ</h1>}
-    <p className="hero-description">Создаём выставочные<br className="desktop-break" /> стенды, которые притягивают внимание</p>
+    {duplicate ? <div className="headline"><span>ВЫСТАВОЧНЫЕ</span><span>СТЕНДЫ</span></div> : <h1 className="headline" aria-label="Выставочные стенды"><span>ВЫСТАВОЧНЫЕ</span><span>СТЕНДЫ</span></h1>}
+    <p className="hero-description">Создаём выставочные<br />стенды, которые притягивают<br />внимание</p>
     <span className="marquee-dot" />
   </div>;
 }
@@ -80,6 +80,7 @@ export default function App() {
     measure();
     const observer = new ResizeObserver(measure);
     observer.observe(hero.current);
+    observer.observe(track.current.firstElementChild!);
     window.addEventListener('resize', measure);
     const onPointer = (e: PointerEvent) => {
       if (e.pointerType === 'mouse' && e.isPrimary) pointer = { x: e.clientX, y: e.clientY };
@@ -102,7 +103,8 @@ export default function App() {
       follower.y = lerp(follower.y, desired.y, settle);
       const appearance = reduced ? 1 : smooth((now - started - 300) / 1050);
       const w = lerp(baseWidth * lerp(.36, 1, appearance), viewport.w - 2 * pad, Math.pow(p, 1.7));
-      const h = lerp(w / (16 / 9), Math.min(viewport.h - 2 * verticalPad, w / (16 / 9)), smooth(p));
+      const finalHeight = mobile ? Math.min(viewport.h - 32, w * 9 / 16) : Math.min(viewport.h - 65, w * .55);
+      const h = lerp(w / (16 / 9), finalHeight, smooth(p));
       const x = lerp(Math.max(pad, Math.min(viewport.w - baseWidth - pad, follower.x - baseWidth / 2)), pad, docking);
       const y = lerp(Math.max(100, Math.min(viewport.h - h - pad, follower.y - h / 2)), Math.max(verticalPad, viewport.hero - scrollY), docking);
       card.current!.style.width = `${w}px`;
@@ -173,7 +175,7 @@ export default function App() {
         <button className="project-cta reveal" style={{ '--delay': '450ms' } as React.CSSProperties} onClick={() => openDialog('brief')}>ОБСУДИТЬ ПРОЕКТ<Arrow /></button>
         <div className="features">
           <article className="feature feature-design reveal" style={{ '--delay': '650ms' } as React.CSSProperties}>
-            <div className="feature-number">3–20</div><h2>вариантов дизайна</h2>
+            <div className="feature-number">3-20</div><h2>вариантов дизайна</h2>
             <p>Проектируем, пока<br />не найдём решение,<br />которое сработает</p>
           </article>
           <article className="feature reveal" style={{ '--delay': '900ms' } as React.CSSProperties}>
@@ -183,7 +185,7 @@ export default function App() {
             {Object.entries(site.socials).map(([name, url]) => url ? <a key={name} href={url} target="_blank" rel="noreferrer" aria-label={name}>{name}</a> :
               <button key={name} type="button" aria-label={`${name} — ссылка пока не добавлена`} title="Контакт мессенджера пока не предоставлен" disabled>{name}</button>)}
           </div>
-          <article className="feature reveal" style={{ '--delay': '1300ms' } as React.CSSProperties}>
+          <article className="feature feature-production reveal" style={{ '--delay': '1300ms' } as React.CSSProperties}>
             <h2>Производство<br /><span>2000 м²</span></h2><p>Реализуем проекты<br />любой сложности<br />и масштаба</p>
           </article>
           <article className="feature reveal" style={{ '--delay': '1550ms' } as React.CSSProperties}>

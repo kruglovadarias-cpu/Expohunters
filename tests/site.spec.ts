@@ -17,6 +17,17 @@ async function sampleImage(page: Page) {
   }));
 }
 
+test('оригинальные логотип, фотография и кириллический шрифт из макета загружаются', async ({ page }) => {
+  await ready(page);
+  await page.evaluate(() => document.fonts.ready);
+  expect(await page.evaluate(() => document.fonts.check('400 162px Onest', 'ВЫСТАВОЧНЫЕ СТЕНДЫ'))).toBe(true);
+  const logo = page.locator('.brand .logo');
+  await expect(logo).toHaveAttribute('src', /expo-hunters-dark\.png$/);
+  expect(await logo.evaluate(img => (img as HTMLImageElement).complete && (img as HTMLImageElement).naturalWidth > 0)).toBe(true);
+  const original = await page.locator('.project-photo').evaluate(img => ({ w: (img as HTMLImageElement).naturalWidth, h: (img as HTMLImageElement).naturalHeight }));
+  expect(original).toEqual({ w: 1280, h: 720 });
+});
+
 test('вступление, следование за курсором, жидкая деформация и обратимый переход при скролле', async ({ page }) => {
   const errors: string[] = [];
   page.on('pageerror', e => errors.push(e.message));

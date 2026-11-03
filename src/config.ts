@@ -3,8 +3,8 @@ export const site = {
   email: 'hunter@expohunters.ru',
   phone: '+7 (495) 504-65-75',
   phoneHref: '+74955046575',
-  // Временный кадр из предоставленного видео. Заменить оригиналом из Figma.
-  projectImage: `${import.meta.env.BASE_URL}images/yandex-go-reference.jpg`,
+  // Оригинал 1280×720 из предоставленного файла «Для кодекса.fig».
+  projectImage: `${import.meta.env.BASE_URL}images/yandex-go.png`,
   projectAlt: 'Выставочный стенд Яндекс Go с жёлтой подсветкой',
   // Ссылки не выдумываем: кнопки активируются после добавления реальных URL.
   socials: { WA: '', TG: '', MAX: '' },

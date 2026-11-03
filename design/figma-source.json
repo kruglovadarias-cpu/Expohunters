@@ -1,0 +1,423 @@
+{
+  "source": {
+    "file": "Для кодекса.fig",
+    "fileKey": "GvHL05ggEc7lWSWQtx5Ej3",
+    "sha256": "ce37294c37a290739b025daac4962b886dfd36f081729ddb9c636408e24589e6",
+    "exportedAt": "2026-11-03T15:12:12.049Z",
+    "canvas": "expohunters",
+    "nodesRead": 515,
+    "referenceFrame": "1:90"
+  },
+  "frames": [
+    {
+      "id": "1:194",
+      "name": "1 кадр",
+      "size": {
+        "x": 1440,
+        "y": 835
+      },
+      "position": {
+        "x": 0,
+        "y": 0
+      }
+    },
+    {
+      "id": "1:142",
+      "name": "2 кадр",
+      "size": {
+        "x": 1440,
+        "y": 835
+      },
+      "position": {
+        "x": 2030,
+        "y": 0
+      }
+    },
+    {
+      "id": "1:90",
+      "name": "3 кадр",
+      "size": {
+        "x": 1440,
+        "y": 835
+      },
+      "position": {
+        "x": 3689,
+        "y": 0
+      }
+    },
+    {
+      "id": "1:197",
+      "name": "4 кадр",
+      "size": {
+        "x": 1440,
+        "y": 835
+      },
+      "position": {
+        "x": 5348,
+        "y": 0
+      }
+    },
+    {
+      "id": "1:249",
+      "name": "5 кадр",
+      "size": {
+        "x": 1440,
+        "y": 835
+      },
+      "position": {
+        "x": 7007,
+        "y": 0
+      }
+    },
+    {
+      "id": "1:301",
+      "name": "6 кадр",
+      "size": {
+        "x": 1440,
+        "y": 835
+      },
+      "position": {
+        "x": 8666,
+        "y": 0
+      }
+    },
+    {
+      "id": "1:353",
+      "name": "7 кадр",
+      "size": {
+        "x": 1440,
+        "y": 835
+      },
+      "position": {
+        "x": 10325,
+        "y": 0
+      }
+    },
+    {
+      "id": "1:406",
+      "name": "7 кадр",
+      "size": {
+        "x": 1440,
+        "y": 835
+      },
+      "position": {
+        "x": 11957,
+        "y": 0
+      }
+    },
+    {
+      "id": "1:460",
+      "name": "7 кадр",
+      "size": {
+        "x": 1440,
+        "y": 835
+      },
+      "position": {
+        "x": 13548,
+        "y": 0
+      }
+    }
+  ],
+  "assets": [
+    {
+      "file": "public/images/yandex-go.png",
+      "figmaImageHash": "e056c526db4a0437c041739c1a41acab120e42f5",
+      "width": 1280,
+      "height": 720,
+      "sha256": "a01f4769bb61784a227a704181cbca27ba8e1ff59ce0f3c69dde9942f14ea879"
+    },
+    {
+      "file": "public/images/yandex-go-preview.png",
+      "figmaImageHash": "22b0628865ee0bcf75cc133f4072e8ce5949445b",
+      "width": 320,
+      "height": 180,
+      "sha256": "4780cda12ae5fad84e8913415bbd341e8a36ea1eb1dfd72eea4551a985d4e414"
+    },
+    {
+      "file": "public/images/expo-hunters-dark.png",
+      "figmaImageHash": "b46b9ff16f31d921d6d92e3ec068e9524978a1f5",
+      "width": 4034,
+      "height": 576,
+      "sha256": "e5c9c2332a74c20d1ce24843fcc9690fc9a46e368aa68a3705dee7f60fa5b8dc"
+    },
+    {
+      "file": "public/images/expo-hunters-light.png",
+      "figmaImageHash": "23cdf2143f719d77da101a1ab4ad3e5996f95f84",
+      "width": 4034,
+      "height": 576,
+      "sha256": "30616fac8f2a12d1b0137c24ffe9183459fdc67c3e1656d3606058fd4074b0c3"
+    },
+    {
+      "file": "public/images/expo-hunters-dark-small.png",
+      "figmaImageHash": "b3c14f8e298b8ea2e636ea80f559981efc9c2ef7",
+      "width": 505,
+      "height": 72,
+      "sha256": "e41ee40742d10b0db4eadb36b894dac776cbd48df5826a618b851511a719742f"
+    },
+    {
+      "file": "public/images/expo-hunters-light-small.png",
+      "figmaImageHash": "f4a2b31d27d912bce91e81637b0e020060f9fa1f",
+      "width": 505,
+      "height": 72,
+      "sha256": "f81480598ad15d43bef26d36a9218051deb02ac760f52219cddcb018dd68240f"
+    }
+  ],
+  "typography": [
+    {
+      "fontName": {
+        "family": "Onest",
+        "style": "Regular",
+        "postscript": "Onest-Regular"
+      },
+      "fontSize": 16,
+      "lineHeight": {
+        "value": 1,
+        "units": "RAW"
+      },
+      "letterSpacing": {
+        "value": 0,
+        "units": "PERCENT"
+      },
+      "textCase": null
+    },
+    {
+      "fontName": {
+        "family": "Onest",
+        "style": "Medium",
+        "postscript": "Onest-Medium"
+      },
+      "fontSize": 12,
+      "lineHeight": {
+        "value": 1,
+        "units": "RAW"
+      },
+      "letterSpacing": {
+        "value": -4,
+        "units": "PERCENT"
+      },
+      "textCase": null
+    },
+    {
+      "fontName": {
+        "family": "Onest",
+        "style": "Medium",
+        "postscript": "Onest-Medium"
+      },
+      "fontSize": 20,
+      "lineHeight": {
+        "value": 1.2000000476837158,
+        "units": "RAW"
+      },
+      "letterSpacing": {
+        "value": -4,
+        "units": "PERCENT"
+      },
+      "textCase": "UPPER"
+    },
+    {
+      "fontName": {
+        "family": "Onest",
+        "style": "Medium",
+        "postscript": "Onest-Medium"
+      },
+      "fontSize": 14,
+      "lineHeight": {
+        "value": 1,
+        "units": "RAW"
+      },
+      "letterSpacing": {
+        "value": 0,
+        "units": "PERCENT"
+      },
+      "textCase": null
+    },
+    {
+      "fontName": {
+        "family": "Onest",
+        "style": "Medium",
+        "postscript": "Onest-Medium"
+      },
+      "fontSize": 16,
+      "lineHeight": {
+        "value": 1.2000000476837158,
+        "units": "RAW"
+      },
+      "letterSpacing": {
+        "value": 0,
+        "units": "PERCENT"
+      },
+      "textCase": null
+    },
+    {
+      "fontName": {
+        "family": "Onest",
+        "style": "Medium",
+        "postscript": "Onest-Medium"
+      },
+      "fontSize": 16,
+      "lineHeight": {
+        "value": 1.2000000476837158,
+        "units": "RAW"
+      },
+      "letterSpacing": {
+        "value": -2,
+        "units": "PERCENT"
+      },
+      "textCase": null
+    },
+    {
+      "fontName": {
+        "family": "Onest",
+        "style": "Light",
+        "postscript": "Onest-Light"
+      },
+      "fontSize": 15,
+      "lineHeight": {
+        "value": 1,
+        "units": "RAW"
+      },
+      "letterSpacing": {
+        "value": 0,
+        "units": "PERCENT"
+      },
+      "textCase": null
+    },
+    {
+      "fontName": {
+        "family": "Onest",
+        "style": "Regular",
+        "postscript": "Onest-Regular"
+      },
+      "fontSize": 162,
+      "lineHeight": {
+        "value": 0.800000011920929,
+        "units": "RAW"
+      },
+      "letterSpacing": {
+        "value": -4,
+        "units": "PERCENT"
+      },
+      "textCase": "UPPER"
+    },
+    {
+      "fontName": {
+        "family": "Onest",
+        "style": "Regular",
+        "postscript": "Onest-Regular"
+      },
+      "fontSize": 88,
+      "lineHeight": {
+        "value": 0.8999999761581421,
+        "units": "RAW"
+      },
+      "letterSpacing": {
+        "value": -7,
+        "units": "PERCENT"
+      },
+      "textCase": "UPPER"
+    },
+    {
+      "fontName": {
+        "family": "Onest",
+        "style": "Regular",
+        "postscript": "Onest-Regular"
+      },
+      "fontSize": 20,
+      "lineHeight": {
+        "value": 1.100000023841858,
+        "units": "RAW"
+      },
+      "letterSpacing": {
+        "value": -2,
+        "units": "PERCENT"
+      },
+      "textCase": null
+    },
+    {
+      "fontName": {
+        "family": "Onest",
+        "style": "Medium",
+        "postscript": "Onest-Medium"
+      },
+      "fontSize": 20,
+      "lineHeight": {
+        "value": 1.100000023841858,
+        "units": "RAW"
+      },
+      "letterSpacing": {
+        "value": -2,
+        "units": "PERCENT"
+      },
+      "textCase": null
+    },
+    {
+      "fontName": {
+        "family": "Onest",
+        "style": "Regular",
+        "postscript": "Onest-Regular"
+      },
+      "fontSize": 20,
+      "lineHeight": {
+        "value": 1,
+        "units": "RAW"
+      },
+      "letterSpacing": {
+        "value": -3,
+        "units": "PERCENT"
+      },
+      "textCase": null
+    }
+  ],
+  "fontSource": {
+    "family": "Onest",
+    "url": "https://raw.githubusercontent.com/google/fonts/main/ofl/onest/Onest%5Bwght%5D.ttf",
+    "license": "SIL Open Font License 1.1",
+    "sha256": "966c5c29b4755da84b6854d5c21dd4eaa2420225d0e9874de602de176d4a9f31"
+  },
+  "colors": {
+    "paper": "#f5f6fb",
+    "ink": "#2c2d32",
+    "red": "#da0d0d",
+    "muted": "rgba(44,45,50,0.5)"
+  },
+  "desktop": {
+    "width": 1440,
+    "height": 835,
+    "header": {
+      "left": 20,
+      "top": 32,
+      "logoWidth": 247,
+      "logoHeight": 35
+    },
+    "headline": {
+      "left": 20,
+      "top": 194,
+      "fontSize": 162,
+      "lineHeight": 0.8,
+      "letterSpacingEm": -0.04,
+      "lineGap": 13
+    },
+    "features": {
+      "left": 20,
+      "top": 619,
+      "height": 179,
+      "columnStarts": [
+        20,
+        373,
+        700,
+        960,
+        1195
+      ]
+    },
+    "follower": {
+      "width": 368,
+      "height": 207
+    },
+    "expandedImage": {
+      "x": 20,
+      "y": 36,
+      "width": 1400,
+      "height": 770
+    }
+  }
+}
