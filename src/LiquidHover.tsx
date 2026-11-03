@@ -3,9 +3,9 @@
 import { useEffect, useRef, type RefObject } from 'react';
 import { VERT, FRAG_ADVECT, FRAG_DIVERGENCE, FRAG_PRESSURE, FRAG_GRAD_SUB, FRAG_POINT, FRAG_OUTPUT } from './liquidShaders';
 
-export interface LiquidMotion { dx: number; dy: number }
+export interface LiquidMotion { dx: number; dy: number; strength?: number }
 interface Props {
-  imageSrc: string;
+  videoRef: RefObject<HTMLVideoElement | null>;
   motionRef: RefObject<LiquidMotion>;
   resolution: number;
   cursorSize: number;
@@ -21,11 +21,13 @@ interface Target {
 interface DoubleTarget { read: Target; write: Target; swap: () => void }
 interface Program { program: WebGLProgram; uniforms: Record<string, WebGLUniformLocation | null> }
 
-export default function LiquidHover({ imageSrc, motionRef, resolution, cursorSize, intensity }: Props) {
+export default function LiquidHover({ videoRef, motionRef, resolution, cursorSize, intensity }: Props) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   useEffect(() => {
     const canvas = canvasRef.current!;
     const container = canvas.parentElement!;
+    const media = videoRef.current;
+    if (!media) return;
     const gl = canvas.getContext('webgl', { alpha: true, antialias: false, premultipliedAlpha: true });
     if (!gl || !gl.getExtension('OES_texture_float') || !gl.getExtension('OES_texture_float_linear') || !gl.getExtension('WEBGL_color_buffer_float')) return;
     const programs: WebGLProgram[] = [];
@@ -35,7 +37,7 @@ export default function LiquidHover({ imageSrc, motionRef, resolution, cursorSiz
     let imageTexture: WebGLTexture | null = null;
     let raf = 0;
     let disposed = false;
-    let imageReady = false;
+    let uploadedTime = -1;
     let imageAspect = 16 / 9;
     let width = 0;
     let height = 0;
@@ -46,7 +48,6 @@ export default function LiquidHover({ imageSrc, motionRef, resolution, cursorSiz
     let output: DoubleTarget;
     let divergence: Target;
     let last = performance.now();
-    const image = new Image();
 
     const deleteTargets = () => {
       for (const t of targets) { gl.deleteFramebuffer(t.fbo); gl.deleteTexture(t.texture); }
@@ -153,24 +154,28 @@ export default function LiquidHover({ imageSrc, motionRef, resolution, cursorSiz
     const observer = new ResizeObserver(() => { try { resize(); } catch { dispose(); } });
     observer.observe(container);
 
-    image.onload = () => {
-      if (disposed) return;
-      imageAspect = image.naturalWidth / image.naturalHeight;
-      imageTexture = gl.createTexture();
-      gl.activeTexture(gl.TEXTURE0); gl.bindTexture(gl.TEXTURE_2D, imageTexture);
-      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
-      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
-      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-      gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, image);
-      imageReady = true;
-    };
-    image.src = imageSrc;
+    imageTexture = gl.createTexture();
+    gl.activeTexture(gl.TEXTURE0); gl.bindTexture(gl.TEXTURE_2D, imageTexture);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
     const render = (now: number) => {
       if (disposed) return;
       raf = requestAnimationFrame(render);
       const dt = Math.min((now - last) / 1000, .033); last = now;
-      if (document.hidden || !imageReady || !width || !height) return;
+      if (document.hidden || media.readyState < HTMLMediaElement.HAVE_CURRENT_DATA || !width || !height) return;
+      const strength = motionRef.current.strength ?? 1;
+      if (strength <= .001) {
+        container.dataset.liquid = 'idle';
+        return;
+      }
+      imageAspect = media.videoWidth / media.videoHeight;
+      if (uploadedTime !== media.currentTime) {
+        gl.activeTexture(gl.TEXTURE0); gl.bindTexture(gl.TEXTURE_2D, imageTexture);
+        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, media);
+        uploadedTime = media.currentTime;
+      }
       const { dx, dy } = motionRef.current;
       if (Math.abs(dx) + Math.abs(dy) > .04) {
         gl.useProgram(splat.program);
@@ -192,7 +197,7 @@ export default function LiquidHover({ imageSrc, motionRef, resolution, cursorSiz
       gl.useProgram(press.program);
       gl.uniform2f(press.uniforms.u_texel, 1 / simW, 1 / simH);
       gl.uniform1i(press.uniforms.u_divergence_texture, divergence.attach(1));
-      for (let i = 0; i < 16; i++) {
+      for (let i = 0; i < 8; i++) {
         gl.uniform1i(press.uniforms.u_pressure_texture, pressure.read.attach(2)); draw(pressure.write); pressure.swap();
       }
       gl.useProgram(gradient.program);
@@ -215,7 +220,7 @@ export default function LiquidHover({ imageSrc, motionRef, resolution, cursorSiz
       gl.uniform1i(display.uniforms.u_output_texture, output.read.attach(1));
       gl.uniform1f(display.uniforms.u_ratio, width / height);
       gl.uniform1f(display.uniforms.u_img_ratio, imageAspect);
-      gl.uniform1f(display.uniforms.u_disturb_power, intensity / 100);
+      gl.uniform1f(display.uniforms.u_disturb_power, intensity / 100 * strength);
       gl.uniform1f(display.uniforms.u_canvas_scale, 1);
       gl.uniform1f(display.uniforms.u_inner_scale, 5 / 6);
       gl.activeTexture(gl.TEXTURE0); gl.bindTexture(gl.TEXTURE_2D, imageTexture);
@@ -227,10 +232,9 @@ export default function LiquidHover({ imageSrc, motionRef, resolution, cursorSiz
     canvas.addEventListener('webglcontextlost', onLost);
     return () => {
       observer.disconnect();
-      image.onload = null;
       canvas.removeEventListener('webglcontextlost', onLost);
       dispose();
     };
-  }, [imageSrc, motionRef, resolution, cursorSize, intensity]);
+  }, [videoRef, motionRef, resolution, cursorSize, intensity]);
   return <canvas ref={canvasRef} className="liquid-canvas" aria-hidden="true" />;
 }

@@ -12,6 +12,7 @@ export default defineConfig({
     viewport: { width: 1440, height: 835 },
     browserName: 'chromium',
     launchOptions: {
+      channel: process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH ? undefined : 'chrome',
       executablePath: process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH || undefined,
       args: ['--no-sandbox', '--enable-unsafe-swiftshader', '--use-angle=swiftshader'],
     },

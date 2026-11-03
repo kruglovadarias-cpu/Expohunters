@@ -1,11 +1,9 @@
 import { useEffect, useRef, useState, type FormEvent } from 'react';
 import { motion, site } from './config';
 import Logo from './Logo';
-import LiquidHover, { type LiquidMotion } from './LiquidHover';
+import HeroMedia from './HeroMedia';
 
 const clamp = (v: number) => Math.max(0, Math.min(1, v));
-const smooth = (v: number) => { const p = clamp(v); return p * p * (3 - 2 * p); };
-const lerp = (a: number, b: number, p: number) => a + (b - a) * p;
 type DialogKind = 'brief' | 'about' | 'production' | 'contacts';
 
 function useReducedMotion() {
@@ -44,14 +42,9 @@ export default function App() {
   const [preparedEmail, setPreparedEmail] = useState('');
   const hero = useRef<HTMLElement>(null);
   const track = useRef<HTMLDivElement>(null);
-  const card = useRef<HTMLDivElement>(null);
   const dialog = useRef<HTMLDialogElement>(null);
-  const liquidMotion = useRef<LiquidMotion>({ dx: 0, dy: 0 });
 
   useEffect(() => {
-    // Загрузка не зависит от сети: все изображения лежат в самом репозитории.
-    const preload = new Image();
-    preload.src = site.projectImage;
     const timer = window.setTimeout(() => setReady(true), reduced ? 0 : motion.introDuration);
     return () => clearTimeout(timer);
   }, [reduced]);
@@ -62,16 +55,12 @@ export default function App() {
   }, [ready]);
 
   useEffect(() => {
-    if (!ready || !hero.current || !track.current || !card.current) return;
+    if (!ready || !hero.current || !track.current) return;
     let raf = 0;
     let last = performance.now();
-    const started = last;
     let marqueeOffset = 0;
     let elapsed = 0;
     let viewport = { w: innerWidth, h: innerHeight, hero: hero.current.offsetHeight, unit: 1, mobile: false };
-    let pointer = { x: innerWidth * .69, y: innerHeight * .57 };
-    let follower = { ...pointer };
-    let previous = { ...pointer };
     const measure = () => {
       viewport = { w: innerWidth, h: innerHeight, hero: hero.current!.offsetHeight,
         unit: (track.current!.firstElementChild as HTMLElement).offsetWidth,
@@ -82,45 +71,14 @@ export default function App() {
     observer.observe(hero.current);
     observer.observe(track.current.firstElementChild!);
     window.addEventListener('resize', measure);
-    const onPointer = (e: PointerEvent) => {
-      if (e.pointerType === 'mouse' && e.isPrimary) pointer = { x: e.clientX, y: e.clientY };
-    };
-    window.addEventListener('pointermove', onPointer, { passive: true });
     const frame = (now: number) => {
       const dt = Math.min(40, now - last);
       last = now;
       const active = !pausedRef.current && !reduced;
       if (active) elapsed += dt;
-      const mobile = viewport.mobile;
-      const p = clamp(scrollY / viewport.hero);
-      const docking = smooth(p / .34);
-      const pad = viewport.w < 760 ? 16 : 20;
-      const verticalPad = viewport.w < 760 ? 16 : 36;
-      const baseWidth = mobile ? Math.min(viewport.w - 64, 368) : Math.min(viewport.w * .256, motion.followerWidth);
-      const settle = active ? 1 - Math.pow(1 - motion.followerSmoothing, dt / (1000 / 60)) : 1;
-      const desired = mobile ? { x: viewport.w / 2, y: Math.min(viewport.hero * .41, 450) } : active ? pointer : follower;
-      follower.x = lerp(follower.x, desired.x, settle);
-      follower.y = lerp(follower.y, desired.y, settle);
-      const appearance = reduced ? 1 : smooth((now - started - 300) / 1050);
-      const w = lerp(baseWidth * lerp(.36, 1, appearance), viewport.w - 2 * pad, Math.pow(p, 1.7));
-      const finalHeight = mobile ? Math.min(viewport.h - 32, w * 9 / 16) : Math.min(viewport.h - 65, w * .55);
-      const h = lerp(w / (16 / 9), finalHeight, smooth(p));
-      const x = lerp(Math.max(pad, Math.min(viewport.w - baseWidth - pad, follower.x - baseWidth / 2)), pad, docking);
-      const y = lerp(Math.max(100, Math.min(viewport.h - h - pad, follower.y - h / 2)), Math.max(verticalPad, viewport.hero - scrollY), docking);
-      card.current!.style.width = `${w}px`;
-      card.current!.style.height = `${h}px`;
-      card.current!.style.transform = `translate3d(${x}px, ${y}px, 0)`;
-      card.current!.dataset.mode = p > .001 ? 'scroll' : 'follow';
-      // Скорость в мировых координатах: деформация сохраняется, даже когда картинка движется вместе с мышью.
-      liquidMotion.current = {
-        dx: active && !mobile ? Math.max(-45, Math.min(45, (follower.x - previous.x) * (1 - docking))) : 0,
-        dy: active && !mobile ? Math.max(-45, Math.min(45, (follower.y - previous.y) * (1 - docking))) : 0,
-      };
-      previous = { ...follower };
       const entering = reduced ? 0 : viewport.w * Math.pow(1 - clamp(elapsed / motion.revealDuration), 3);
       if (active && elapsed > motion.revealDuration) marqueeOffset = (marqueeOffset + motion.marqueeSpeed * dt / 1000) % viewport.unit;
       track.current!.style.transform = `translate3d(${entering - marqueeOffset}px, 0, 0)`;
-      if (document.hidden) liquidMotion.current = { dx: 0, dy: 0 };
       raf = requestAnimationFrame(frame);
     };
     raf = requestAnimationFrame(frame);
@@ -128,7 +86,6 @@ export default function App() {
       cancelAnimationFrame(raf);
       observer.disconnect();
       window.removeEventListener('resize', measure);
-      window.removeEventListener('pointermove', onPointer);
     };
   }, [ready, reduced]);
 
@@ -194,15 +151,10 @@ export default function App() {
         </div>
       </main>
     </section>
-    <section id="projects" className="project-section" aria-label="Проект: выставочный стенд Яндекс Go">
-      <h2 className="sr-only">Выставочный стенд Яндекс Go</h2>
-      <img className="project-static" src={site.projectImage} alt={site.projectAlt} />
+    <section id="projects" className="project-section" aria-label="Видео выставочных стендов Expo Hunters">
+      <h2 className="sr-only">Выставочные стенды Expo Hunters</h2>
+      <HeroMedia hero={hero} ready={ready} paused={paused} reduced={reduced} />
     </section>
-    <div className="project-floating" ref={card} aria-hidden="true">
-      <img className="project-photo" src={site.projectImage} alt="" />
-      {ready && !reduced && !paused && <LiquidHover imageSrc={site.projectImage} motionRef={liquidMotion} resolution={motion.liquidResolution}
-        cursorSize={motion.liquidRadius} intensity={motion.liquidIntensity} />}
-    </div>
     <button className="motion-toggle" onClick={() => setPaused(!paused)} aria-pressed={paused}
       aria-label={paused ? 'Продолжить движение' : 'Остановить движение'} title={paused ? 'Продолжить движение' : 'Остановить движение'}>
       <svg aria-hidden="true" width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.1">

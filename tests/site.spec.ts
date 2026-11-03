@@ -17,14 +17,14 @@ async function sampleImage(page: Page) {
   }));
 }
 
-test('оригинальные логотип, фотография и кириллический шрифт из макета загружаются', async ({ page }) => {
+test('оригинальный логотип, реальное видео и шрифт загружаются', async ({ page }) => {
   await ready(page);
   await page.evaluate(() => document.fonts.ready);
   expect(await page.evaluate(() => document.fonts.check('400 162px Onest', 'ВЫСТАВОЧНЫЕ СТЕНДЫ'))).toBe(true);
   const logo = page.locator('.brand .logo');
   await expect(logo).toHaveAttribute('src', /expo-hunters-dark\.png$/);
   expect(await logo.evaluate(img => (img as HTMLImageElement).complete && (img as HTMLImageElement).naturalWidth > 0)).toBe(true);
-  const original = await page.locator('.project-photo').evaluate(img => ({ w: (img as HTMLImageElement).naturalWidth, h: (img as HTMLImageElement).naturalHeight }));
+  const original = await page.locator('video').evaluate(video => ({ w: video.videoWidth, h: video.videoHeight }));
   expect(original).toEqual({ w: 1280, h: 720 });
 });
 
@@ -39,6 +39,7 @@ test('вступление, следование за курсором, жидк
   await expect(page.locator('.feature').last()).toHaveCSS('opacity', '1');
   await page.mouse.move(400, 420);
   await expect.poll(async () => (await image.boundingBox())!.x).toBeLessThan(240);
+  await page.locator('video').evaluate(video => video.pause());
   await page.waitForTimeout(800);
   const rest = await sampleImage(page);
   expect(rest.some((value, index) => index % 4 === 3 && value > 0)).toBe(true);
@@ -46,6 +47,7 @@ test('вступление, следование за курсором, жидк
   const disturbed = await sampleImage(page);
   expect(disturbed).not.toEqual(rest);
   await expect.poll(async () => (await image.boundingBox())!.x).toBeGreaterThan(650);
+  await page.locator('video').evaluate(video => video.play());
   await page.evaluate(() => scrollTo({ top: document.querySelector('.hero')!.clientHeight, behavior: 'instant' }));
   await expect(image).toHaveAttribute('data-mode', 'scroll');
   await expect.poll(async () => (await image.boundingBox())!.width).toBeGreaterThan(1360);
@@ -87,6 +89,7 @@ test('бриф и контакты открываются, диалог закр
 test('кнопка паузы останавливает бегущую строку', async ({ page }) => {
   await ready(page);
   await page.getByRole('button', { name: 'Остановить движение' }).click();
+  await expect.poll(() => page.locator('video').evaluate(video => video.paused)).toBe(true);
   const track = page.locator('.marquee-track');
   await expect(page.getByRole('button', { name: 'Продолжить движение' })).toHaveAttribute('aria-pressed', 'true');
   const paused = await track.evaluate(el => getComputedStyle(el).transform);
@@ -106,7 +109,9 @@ test('мобильный экран и reduced motion: без горизонта
   await expect(page.getByRole('dialog')).toBeVisible();
   await page.keyboard.press('Escape');
   await page.evaluate(() => document.querySelector('#projects')!.scrollIntoView());
-  await expect(page.getByRole('img', { name: 'Выставочный стенд Яндекс Go с жёлтой подсветкой' })).toBeInViewport();
+  await expect(page.locator('video')).toBeInViewport();
+  await expect(page.locator('video')).toHaveAttribute('controls', '');
+  expect(await page.locator('video').evaluate(video => video.paused)).toBe(true);
   await page.screenshot({ path: 'test-results/mobile-second-screen.png' });
 });
 
@@ -126,7 +131,7 @@ test.describe('сенсорный экран', () => {
   });
 });
 
-test('при недоступном WebGL фотография остаётся видимой', async ({ page }) => {
+test('при недоступном WebGL видео остаётся видимым и играет', async ({ page }) => {
   await page.addInitScript(() => {
     const original = HTMLCanvasElement.prototype.getContext;
     HTMLCanvasElement.prototype.getContext = function (type: string, ...args: unknown[]) {
@@ -135,8 +140,9 @@ test('при недоступном WebGL фотография остаётся 
     } as typeof original;
   });
   await ready(page);
-  const photo = page.locator('.project-photo');
+  const photo = page.locator('.project-video');
   await expect(photo).toBeVisible();
   await expect(photo).toHaveCSS('opacity', '1');
-  expect(await photo.evaluate(img => (img as HTMLImageElement).naturalWidth)).toBeGreaterThan(0);
+  expect(await photo.evaluate(video => (video as HTMLVideoElement).videoWidth)).toBeGreaterThan(0);
+  await expect.poll(() => photo.evaluate(video => (video as HTMLVideoElement).currentTime)).toBeGreaterThan(.1);
 });

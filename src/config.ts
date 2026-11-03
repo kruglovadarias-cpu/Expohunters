@@ -3,9 +3,9 @@ export const site = {
   email: 'hunter@expohunters.ru',
   phone: '+7 (495) 504-65-75',
   phoneHref: '+74955046575',
-  // Оригинал 1280×720 из предоставленного файла «Для кодекса.fig».
-  projectImage: `${import.meta.env.BASE_URL}images/yandex-go.png`,
-  projectAlt: 'Выставочный стенд Яндекс Go с жёлтой подсветкой',
+  // Реальный ролик первого экрана expohunters.com, локальная копия без звука.
+  projectVideo: `${import.meta.env.BASE_URL}videos/expo-hunters-hero.mp4`,
+  projectVideoLabel: 'Видео выставочных стендов Expo Hunters',
   // Ссылки не выдумываем: кнопки активируются после добавления реальных URL.
   socials: { WA: '', TG: '', MAX: '' },
 };
@@ -16,7 +16,9 @@ export const motion = {
   marqueeSpeed: 78, // пикселей в секунду
   followerWidth: 368,
   followerSmoothing: 0.085,
-  liquidIntensity: 86, // из приложенного пресета Originkit
-  liquidResolution: 3,
+  liquidIntensity: 30,
+  liquidResolution: 2,
   liquidRadius: 95,
+  controlGap: 24,
+  scrollSmoothing: 95, // миллисекунды, без задержки начала увеличения
 };

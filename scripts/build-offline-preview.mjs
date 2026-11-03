@@ -5,12 +5,12 @@ import { dirname, resolve, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 // Переносимая копия настоящего приложения: те же React-компоненты и WebGL.
-// Все шрифты, изображения, CSS и JavaScript встроены в один HTML.
+// Видео, шрифты, логотипы, CSS и JavaScript встроены в один HTML.
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const publicRoot = resolve(root, 'public');
 const outputDir = resolve(root, 'dist-preview');
 const archive = resolve(root, 'docs/expo-hunters-preview.zip');
-const mime = { '.png': 'image/png', '.svg': 'image/svg+xml', '.ttf': 'font/ttf' };
+const mime = { '.png': 'image/png', '.svg': 'image/svg+xml', '.ttf': 'font/ttf', '.mp4': 'video/mp4' };
 
 async function dataUrl(relative) {
   const path = resolve(publicRoot, relative);
@@ -28,10 +28,10 @@ for (const variant of ['dark', 'light']) {
   };
 }
 const configSource = await readFile(resolve(root, 'src/config.ts'), 'utf8');
-const projectPattern = /projectImage:\s*`\$\{import\.meta\.env\.BASE_URL\}([^`]+)`/;
+const projectPattern = /projectVideo:\s*`\$\{import\.meta\.env\.BASE_URL\}([^`]+)`/;
 const projectPath = configSource.match(projectPattern)?.[1];
-if (!projectPath) throw new Error('Update the preview importer for the new project image configuration');
-const projectImage = await dataUrl(projectPath);
+if (!projectPath) throw new Error('Update the preview importer for the new video configuration');
+const projectVideo = await dataUrl(projectPath);
 
 const result = await build({
   root,
@@ -43,7 +43,7 @@ const result = await build({
     transform(code, id) {
       const path = id.split('?')[0];
       if (path === resolve(root, 'src/config.ts')) {
-        return code.replace(projectPattern, `projectImage: ${JSON.stringify(projectImage)}`);
+        return code.replace(projectPattern, `projectVideo: ${JSON.stringify(projectVideo)}`);
       }
       if (path === resolve(root, 'src/Logo.tsx')) {
         const src = 'src={`${base}.png`}';
@@ -94,7 +94,7 @@ await mkdir(outputDir, { recursive: true });
 await mkdir(dirname(archive), { recursive: true });
 await writeFile(resolve(outputDir, 'index.html'), html);
 
-const instructions = `Expo Hunters — интерактивный просмотр\n\n1. Распакуйте архив.\n2. Откройте index.html в браузере Chrome на компьютере.\n3. Дождитесь появления элементов, двигайте мышью и прокрутите страницу вниз и обратно.\n\nКартинка следует за мышью и деформируется. При прокрутке она увеличивается во второй экран. Круглая кнопка справа снизу ставит движение на паузу.\n\nЕсли эффекты отключены системной настройкой уменьшения движения или WebGL недоступен, отображается упрощённый вариант.\n\nИнтернет и установка программ не требуются. Форма только подготавливает письмо; отправка выполняется вашей почтовой программой.\n\nЭто снимок текущей версии сайта, а не автоматическая синхронизация с GitHub.\n`;
+const instructions = `Expo Hunters — интерактивный просмотр\n\n1. Распакуйте архив.\n2. Откройте index.html в браузере Chrome на компьютере.\n3. Дождитесь появления элементов, двигайте мышью и прокрутите страницу вниз и обратно.\n\nВидео следует за мышью и мягко деформируется с интенсивностью 30%. Перед кнопками оно останавливается. При прокрутке тот же ролик плавно увеличивается во второй экран и продолжает играть. Круглая кнопка справа снизу ставит движение на паузу.\n\nЕсли эффекты отключены системной настройкой уменьшения движения или WebGL недоступен, отображается упрощённый вариант.\n\nИнтернет и установка программ не требуются. Форма только подготавливает письмо; отправка выполняется вашей почтовой программой.\n\nЭто снимок текущей версии сайта, а не автоматическая синхронизация с GitHub.\n`;
 await writeFile(resolve(outputDir, 'Readme.txt'), instructions);
 execFileSync('python3', ['-c', `
 import sys,zipfile

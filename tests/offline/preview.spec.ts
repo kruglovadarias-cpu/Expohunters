@@ -31,7 +31,7 @@ test('переносимый HTML не требует сети: шрифт, WebG
   await page.evaluate(() => document.fonts.ready);
   expect(await page.evaluate(() => document.fonts.check('400 162px Onest', 'Выставочные стенды'))).toBe(true);
   expect(await page.locator('.brand .logo').evaluate(img => (img as HTMLImageElement).naturalWidth > 0)).toBe(true);
-  expect(await page.locator('.project-photo').evaluate(img => (img as HTMLImageElement).naturalWidth)).toBe(1280);
+  expect(await page.locator('video').evaluate(video => video.videoWidth)).toBe(1280);
   const image = page.locator('.project-floating');
   await expect(image).toHaveAttribute('data-liquid', 'ready');
   await page.mouse.move(400, 420);

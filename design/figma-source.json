@@ -124,14 +124,16 @@
       "figmaImageHash": "e056c526db4a0437c041739c1a41acab120e42f5",
       "width": 1280,
       "height": 720,
-      "sha256": "a01f4769bb61784a227a704181cbca27ba8e1ff59ce0f3c69dde9942f14ea879"
+      "sha256": "a01f4769bb61784a227a704181cbca27ba8e1ff59ce0f3c69dde9942f14ea879",
+      "removedFromWebsite": true
     },
     {
       "file": "public/images/yandex-go-preview.png",
       "figmaImageHash": "22b0628865ee0bcf75cc133f4072e8ce5949445b",
       "width": 320,
       "height": 180,
-      "sha256": "4780cda12ae5fad84e8913415bbd341e8a36ea1eb1dfd72eea4551a985d4e414"
+      "sha256": "4780cda12ae5fad84e8913415bbd341e8a36ea1eb1dfd72eea4551a985d4e414",
+      "removedFromWebsite": true
     },
     {
       "file": "public/images/expo-hunters-dark.png",

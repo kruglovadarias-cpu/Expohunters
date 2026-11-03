@@ -212,17 +212,18 @@ vec3 sample_image_smooth(vec2 uv) {
 }
 
 void main () {
-  float offset = texture2D(u_output_texture, vUv).r;
+  float offset = min(texture2D(u_output_texture, vUv).r, .08);
 
   vec2 velocity = texture2D(u_velocity_texture, vUv).xy;
   velocity += .001;
 
   vec2 img_uv = get_img_uv();
-  img_uv -= u_disturb_power * normalize(velocity) * offset;
-  img_uv -= u_disturb_power * normalize(velocity) * offset;
+  // Ограниченное смещение сохраняет читаемость ролика даже при резком движении.
+  vec2 displacement = u_disturb_power * normalize(velocity) * offset;
+  img_uv -= displacement;
 
   vec2 frame_uv = get_frame_uv();
-  frame_uv -= u_disturb_power * normalize(velocity) * offset;
+  frame_uv -= displacement * .65;
 
   vec3 img = sample_image_smooth(img_uv);
   float opacity = get_img_frame_alpha(frame_uv, .002);

@@ -1,0 +1,11 @@
+{
+  "sourceUrl": "https://expohunters.com/videos/glavnoe-szhatoe.mp4",
+  "file": "public/videos/expo-hunters-hero.mp4",
+  "sourceSha256": "63af89fc4375f4fe3fe946fabb922213e66dcc0ac7839eced4814b65bd8a42f8",
+  "sha256": "144295150717451a64af38ea8eb20dbd5b8a175add0947a0bd22c26a8807c84f",
+  "width": 1280,
+  "height": 720,
+  "fps": 60,
+  "durationSeconds": 18.97,
+  "processing": "Original H.264 video stream copied without re-encoding; unused audio removed; MP4 faststart enabled."
+}
