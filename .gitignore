@@ -1,6 +1,7 @@
 # Logs
 test-results/
 playwright-report/
+dist-preview/
 logs
 *.log
 npm-debug.log*
