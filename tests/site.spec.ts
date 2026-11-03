@@ -7,12 +7,13 @@ async function ready(page: Page) {
 }
 
 async function sampleImage(page: Page) {
-  return page.locator('canvas').evaluate(canvas => new Promise<number[]>(resolve => {
+  return page.locator('canvas').evaluate(canvas => new Promise<{ row: number[]; content: number[] }>(resolve => {
     requestAnimationFrame(() => {
       const gl = (canvas as HTMLCanvasElement).getContext('webgl')!;
-      const pixels = new Uint8Array(16 * 16 * 4);
-      gl.readPixels(Math.floor(canvas.width / 2) - 8, Math.floor(canvas.height / 2) - 8, 16, 16, gl.RGBA, gl.UNSIGNED_BYTE, pixels);
-      resolve(Array.from(pixels));
+      const pixels = new Uint8Array(canvas.width * 4);
+      gl.readPixels(0, Math.floor(canvas.height / 2), canvas.width, 1, gl.RGBA, gl.UNSIGNED_BYTE, pixels);
+      const center = (Math.floor(canvas.width / 2) - 8) * 4;
+      resolve({ row: Array.from(pixels), content: Array.from(pixels.slice(center, center + 16 * 4)) });
     });
   }));
 }
@@ -42,10 +43,11 @@ test('вступление, следование за курсором, жидк
   await page.locator('video').evaluate(video => video.pause());
   await page.waitForTimeout(800);
   const rest = await sampleImage(page);
-  expect(rest.some((value, index) => index % 4 === 3 && value > 0)).toBe(true);
+  expect(rest.row.some((value, index) => index % 4 === 3 && value > 0)).toBe(true);
   for (let x = 420; x <= 1000; x += 80) await page.mouse.move(x, 350 + (x % 160), { steps: 2 });
   const disturbed = await sampleImage(page);
-  expect(disturbed).not.toEqual(rest);
+  expect(disturbed.row).not.toEqual(rest.row);
+  expect(disturbed.content).toEqual(rest.content);
   await expect.poll(async () => (await image.boundingBox())!.x).toBeGreaterThan(650);
   await page.locator('video').evaluate(video => video.play());
   await page.evaluate(() => scrollTo({ top: document.querySelector('.hero')!.clientHeight, behavior: 'instant' }));

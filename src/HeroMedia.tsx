@@ -53,7 +53,12 @@ export default function HeroMedia({ hero, ready, paused, reduced }: Props) {
     let progress = 0;
     let lowerEdge = size.h - motion.controlGap;
     let upperEdge = 100;
+    let cta = { right: 0, top: size.h };
     let mobile = false;
+
+    // Защита только рядом с кнопкой: над соцсетями видео движется свободно.
+    const lowerAt = (x: number, width: number) => mix(cta.top - motion.controlGap, lowerEdge,
+      smooth((x - width / 2 - cta.right - motion.controlGap) / 96));
 
     const measure = () => {
       const old = size;
@@ -61,20 +66,20 @@ export default function HeroMedia({ hero, ready, paused, reduced }: Props) {
       mobile = size.w < 760 || matchMedia('(pointer: coarse)').matches;
       const header = firstScreen.querySelector<HTMLElement>('.header');
       upperEdge = Math.max(100, (header ? topWithin(header, firstScreen) + header.offsetHeight : 76) + motion.controlGap);
-      const controls = firstScreen.querySelectorAll<HTMLElement>('.project-cta, .socials > *');
-      const tops = [...controls].filter(el => el.offsetWidth && el.offsetHeight).map(el => topWithin(el, firstScreen));
-      lowerEdge = Math.min(size.h - motion.controlGap, ...tops.map(top => top - motion.controlGap));
+      const button = firstScreen.querySelector<HTMLElement>('.project-cta');
+      cta = button ? { right: button.offsetLeft + button.offsetWidth, top: topWithin(button, firstScreen) } : { right: 0, top: size.h };
+      lowerEdge = size.h - motion.controlGap;
       if (origin && (old.w !== size.w || old.h !== size.h)) {
         origin.w = Math.min(motion.followerWidth, origin.w * size.w / old.w, size.w - 32);
         origin.h = origin.w * 9 / 16;
         origin.x = clamp(origin.x * size.w / old.w, 16, Math.max(16, size.w - origin.w - 16));
-        origin.y = clamp(origin.y * size.h / old.h, upperEdge, Math.max(upperEdge, lowerEdge - origin.h));
+        origin.y = clamp(origin.y * size.h / old.h, upperEdge, Math.max(upperEdge, lowerAt(origin.x + origin.w / 2, origin.w) - origin.h));
       }
     };
     measure();
     const observer = new ResizeObserver(measure);
     observer.observe(firstScreen);
-    for (const el of firstScreen.querySelectorAll<HTMLElement>('.header, .project-cta, .socials')) observer.observe(el);
+    for (const el of firstScreen.querySelectorAll<HTMLElement>('.header, .project-cta')) observer.observe(el);
     window.addEventListener('resize', measure);
     const move = (e: PointerEvent) => {
       if (e.isPrimary && e.pointerType === 'mouse') pointer = { x: e.clientX, y: e.clientY };
@@ -110,21 +115,22 @@ export default function HeroMedia({ hero, ready, paused, reduced }: Props) {
         const follow = 1 - Math.pow(1 - motion.followerSmoothing, dt / (1000 / 60));
         const desired = mobile ? { x: size.w / 2, y: size.hero * .41 } : active ? pointer : center;
         const target = { x: clamp(desired.x, pad + rect.w / 2, size.w - pad - rect.w / 2),
-          y: clamp(desired.y, upperEdge + rect.h / 2, Math.max(upperEdge + rect.h / 2, lowerEdge - rect.h / 2)) };
+          y: clamp(desired.y, upperEdge + rect.h / 2, Math.max(upperEdge + rect.h / 2, lowerAt(desired.x, rect.w) - rect.h / 2)) };
         center = { x: mix(center.x, target.x, follow), y: mix(center.y, target.y, follow) };
         rect.x = clamp(center.x - rect.w / 2, pad, size.w - pad - rect.w);
-        rect.y = clamp(center.y - rect.h / 2, upperEdge, Math.max(upperEdge, lowerEdge - rect.h));
+        rect.y = clamp(center.y - rect.h / 2, upperEdge, Math.max(upperEdge, lowerAt(center.x, rect.w) - rect.h));
         center = { x: rect.x + rect.w / 2, y: rect.y + rect.h / 2 };
       }
       panel.style.width = `${rect.w}px`;
       panel.style.height = `${rect.h}px`;
       panel.style.transform = `translate3d(${rect.x}px, ${rect.y}px, 0)`;
       panel.dataset.mode = origin ? 'scroll' : 'follow';
-      const strength = 1 - smooth(progress / .25);
+      const strength = 1 - smooth(progress);
       liquidMotion.current = {
         dx: active && !mobile && !origin ? clamp(center.x - previousCenter.x, -35, 35) : 0,
         dy: active && !mobile && !origin ? clamp(center.y - previousCenter.y, -35, 35) : 0,
         strength,
+        paused: !active,
       };
       previousCenter = { ...center };
       raf = requestAnimationFrame(frame);
@@ -141,7 +147,7 @@ export default function HeroMedia({ hero, ready, paused, reduced }: Props) {
   return <div className="media-viewport"><div className="project-floating" ref={card} data-intensity={motion.liquidIntensity}>
     <video ref={video} className="project-video" src={site.projectVideo} aria-label={site.projectVideoLabel}
       muted loop playsInline preload="auto" autoPlay={ready && !paused && !reduced} controls={reduced} />
-    {ready && !paused && !reduced && finePointer && <LiquidHover videoRef={video} motionRef={liquidMotion}
-      resolution={motion.liquidResolution} cursorSize={motion.liquidRadius} intensity={motion.liquidIntensity} />}
+    {ready && !reduced && finePointer && <LiquidHover videoRef={video} motionRef={liquidMotion}
+      resolution={motion.liquidResolution} cursorSize={motion.liquidRadius} intensity={motion.liquidIntensity} feather={motion.liquidFeather} />}
   </div></div>;
 }

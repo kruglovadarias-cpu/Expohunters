@@ -1,25 +1,32 @@
 import { test, expect, type Page } from '@playwright/test';
 
 async function ready(page: Page) {
-  await page.goto('/');
+  await page.goto('/', { waitUntil: 'domcontentloaded' });
   await expect(page.locator('.feature').last()).toHaveCSS('opacity', '1');
   await expect(page.locator('.project-floating')).toHaveAttribute('data-liquid', 'ready');
   await expect.poll(() => page.locator('video').evaluate(video => video.currentTime)).toBeGreaterThan(.1);
 }
 
-test('плашка останавливается перед хедером, кнопкой проекта и соцсетями', async ({ page }) => {
+test('плашка защищает хедер и кнопку проекта, но свободно проходит над соцсетями', async ({ page }) => {
   await ready(page);
   const panel = page.locator('.project-floating');
-  for (const control of [page.locator('.project-cta'), page.locator('.socials > *').first(), page.locator('.header')]) {
+  for (const control of [page.locator('.project-cta'), page.locator('.header')]) {
     const target = (await control.boundingBox())!;
     await page.mouse.move(target.x + target.width / 2, target.y + target.height / 2, { steps: 10 });
     await page.waitForTimeout(250);
-    const frame = (await panel.boundingBox())!;
-    const cta = (await page.locator('.project-cta').boundingBox())!;
-    const header = (await page.locator('.header').boundingBox())!;
+    const { frame, cta, header } = await page.evaluate(() => ({
+      frame: document.querySelector('.project-floating')!.getBoundingClientRect().toJSON(),
+      cta: document.querySelector('.project-cta')!.getBoundingClientRect().toJSON(),
+      header: document.querySelector('.header')!.getBoundingClientRect().toJSON(),
+    }));
     expect(frame.y + frame.height).toBeLessThanOrEqual(cta.y - 20);
     expect(frame.y).toBeGreaterThanOrEqual(header.y + header.height + 20);
   }
+  const socials = (await page.locator('.socials > *').first().boundingBox())!;
+  await page.mouse.move(socials.x + socials.width / 2, socials.y + socials.height / 2, { steps: 12 });
+  await expect.poll(async () => { const rect = (await panel.boundingBox())!; return rect.y + rect.height; }).toBeGreaterThan(socials.y + socials.height);
+  const free = (await panel.boundingBox())!;
+  expect(free.y).toBeLessThan(socials.y);
   await page.getByRole('button', { name: 'ОБСУДИТЬ ПРОЕКТ', exact: true }).click();
   await expect(page.getByRole('dialog')).toBeVisible();
 });
@@ -47,7 +54,7 @@ test('увеличение начинается сразу, идёт посте�
     await expect(video).toHaveAttribute('data-instance', 'original');
   }
   await expect.poll(async () => (await panel.boundingBox())!.width).toBeGreaterThan(1395);
-  await expect(panel).toHaveAttribute('data-liquid', 'idle');
+  await expect(panel).toHaveAttribute('data-liquid', 'ready');
   const playback = await video.evaluate(media => ({ time: media.currentTime, duration: media.duration, paused: media.paused }));
   expect((playback.time - before + playback.duration) % playback.duration).toBeGreaterThan(.2);
   expect(playback.paused).toBe(false);
@@ -56,6 +63,48 @@ test('увеличение начинается сразу, идёт посте�
   await expect.poll(async () => (await panel.boundingBox())!.width).toBeLessThan(400);
   await expect(video).toHaveAttribute('data-instance', 'original');
   await expect(page.locator('video')).toHaveCount(1);
+});
+
+test('мягкая жидкая маска не даёт пустых кадров при увеличении и обратной прокрутке', async ({ page }) => {
+  await ready(page);
+  const result = await page.evaluate(() => new Promise<{ blank: number; samples: number; softPixels: number }>(resolve => {
+    const video = document.querySelector('video')!;
+    video.pause();
+    const panel = document.querySelector<HTMLElement>('.project-floating')!;
+    const canvas = document.querySelector('canvas')!;
+    const gl = canvas.getContext('webgl')!;
+    let blank = 0, samples = 0, softPixels = 0;
+    const observer = new ResizeObserver(() => {
+      // ResizeObserver выполняется после rAF и до paint: именно здесь старая
+      // реализация очищала drawing buffer и показывала прозрачный кадр.
+      const pixel = new Uint8Array(4);
+      gl.readPixels(Math.floor(canvas.width / 2), Math.floor(canvas.height / 2), 1, 1, gl.RGBA, gl.UNSIGNED_BYTE, pixel);
+      samples++;
+      if (pixel[3] < 250) blank++;
+      if (samples === 1) {
+        const row = new Uint8Array(canvas.width * 4);
+        gl.readPixels(0, Math.floor(canvas.height / 2), canvas.width, 1, gl.RGBA, gl.UNSIGNED_BYTE, row);
+        for (let i = 3; i < row.length; i += 4) if (row[i] > 10 && row[i] < 245) softPixels++;
+      }
+    });
+    observer.observe(panel);
+    const start = performance.now();
+    const heroHeight = document.querySelector<HTMLElement>('.hero')!.offsetHeight;
+    const frame = (now: number) => {
+      const p = Math.min(1, (now - start) / 3000);
+      scrollTo({ top: heroHeight * (p <= .5 ? p * 2 : 2 - p * 2), behavior: 'instant' });
+      if (p < 1) requestAnimationFrame(frame);
+      else requestAnimationFrame(() => {
+        observer.disconnect();
+        resolve({ blank, samples, softPixels });
+      });
+    };
+    requestAnimationFrame(frame);
+  }));
+  expect(result.samples).toBeGreaterThan(5);
+  expect(result.blank).toBe(0);
+  expect(result.softPixels).toBeGreaterThan(8);
+  await expect(page.locator('.project-floating')).toHaveAttribute('data-liquid', 'ready');
 });
 
 test('30% деформации сохраняют сплошную читаемую видеоповерхность при резком движении', async ({ page }) => {

@@ -3,7 +3,7 @@ import { defineConfig } from '@playwright/test';
 export default defineConfig({
   testDir: './tests',
   testIgnore: '**/offline/**',
-  timeout: 30000,
+  timeout: 45000, // запас для видео и WebGL на программном GPU в CI
   fullyParallel: false,
   workers: 1,
   reporter: 'list',

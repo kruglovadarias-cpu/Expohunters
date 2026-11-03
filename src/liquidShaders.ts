@@ -153,6 +153,8 @@ uniform sampler2D u_text_texture;
 uniform vec2 u_point;
 uniform float u_canvas_scale;
 uniform float u_inner_scale;
+uniform vec2 u_frame_texel;
+uniform float u_feather;
 
 vec2 get_img_uv() {
   vec2 uv = vUv - 0.5;
@@ -178,55 +180,33 @@ vec2 get_frame_uv() {
   return uv + 0.5;
 }
 
-float get_img_frame_alpha(vec2 uv, float img_frame_width) {
-  float img_frame_alpha = smoothstep(0., img_frame_width, uv.x) * smoothstep(1., 1. - img_frame_width, uv.x);
-  img_frame_alpha *= smoothstep(0., img_frame_width, uv.y) * smoothstep(1., 1. - img_frame_width, uv.y);
-  return img_frame_alpha;
+float get_img_frame_alpha(vec2 uv) {
+  vec2 feather = u_frame_texel * u_feather;
+  vec2 start = smoothstep(-feather, feather, uv);
+  vec2 end = 1. - smoothstep(1. - feather, 1. + feather, uv);
+  return start.x * start.y * end.x * end.y;
 }
 
-vec3 sample_image_smooth(vec2 uv) {
-  vec2 uvc = clamp(uv, 0.0, 1.0);
-  vec3 base = texture2D(u_text_texture, vec2(uvc.x, 1.0 - uvc.y)).rgb;
-
-  float yBelow = step(uv.y, 0.0);
-  float yAbove = step(1.0, uv.y);
-  float xLeft = step(uv.x, 0.0);
-  float xRight = step(1.0, uv.x);
-  float outOfBounds = max(max(yBelow, yAbove), max(xLeft, xRight));
-
-  if (outOfBounds > 0.0) {
-    float d = 0.002;
-    vec3 sum = vec3(0.0);
-    sum += texture2D(u_text_texture, vec2(clamp(uvc.x - d, 0.0, 1.0), 1.0 - clamp(uvc.y - d, 0.0, 1.0))).rgb;
-    sum += texture2D(u_text_texture, vec2(clamp(uvc.x, 0.0, 1.0), 1.0 - clamp(uvc.y - d, 0.0, 1.0))).rgb;
-    sum += texture2D(u_text_texture, vec2(clamp(uvc.x + d, 0.0, 1.0), 1.0 - clamp(uvc.y - d, 0.0, 1.0))).rgb;
-    sum += texture2D(u_text_texture, vec2(clamp(uvc.x - d, 0.0, 1.0), 1.0 - clamp(uvc.y, 0.0, 1.0))).rgb;
-    sum += texture2D(u_text_texture, vec2(clamp(uvc.x, 0.0, 1.0), 1.0 - clamp(uvc.y, 0.0, 1.0))).rgb;
-    sum += texture2D(u_text_texture, vec2(clamp(uvc.x + d, 0.0, 1.0), 1.0 - clamp(uvc.y, 0.0, 1.0))).rgb;
-    sum += texture2D(u_text_texture, vec2(clamp(uvc.x - d, 0.0, 1.0), 1.0 - clamp(uvc.y + d, 0.0, 1.0))).rgb;
-    sum += texture2D(u_text_texture, vec2(clamp(uvc.x, 0.0, 1.0), 1.0 - clamp(uvc.y + d, 0.0, 1.0))).rgb;
-    sum += texture2D(u_text_texture, vec2(clamp(uvc.x + d, 0.0, 1.0), 1.0 - clamp(uvc.y + d, 0.0, 1.0))).rgb;
-    base = sum / 9.0;
-  }
-  return base;
+vec3 sample_image(vec2 uv) {
+  vec2 sampleUv = clamp(uv, 0., 1.);
+  return texture2D(u_text_texture, vec2(sampleUv.x, 1. - sampleUv.y)).rgb;
 }
 
 void main () {
-  float offset = min(texture2D(u_output_texture, vUv).r, .08);
+  float offset = clamp(texture2D(u_output_texture, vUv).r, 0., .1);
 
   vec2 velocity = texture2D(u_velocity_texture, vUv).xy;
-  velocity += .001;
-
   vec2 img_uv = get_img_uv();
-  // Ограниченное смещение сохраняет читаемость ролика даже при резком движении.
-  vec2 displacement = u_disturb_power * normalize(velocity) * offset;
-  img_uv -= displacement;
+  // Жидкость меняет мягкую маску, а содержимое видео остаётся стабильным.
+  // У затухающей скорости направление плавно исчезает, а не дрожит normalize(0).
+  vec2 displacement = u_disturb_power * velocity / max(length(velocity), 4.) * offset;
 
   vec2 frame_uv = get_frame_uv();
-  frame_uv -= displacement * .65;
+  frame_uv -= displacement;
 
-  vec3 img = sample_image_smooth(img_uv);
-  float opacity = get_img_frame_alpha(frame_uv, .002);
+  float opacity = get_img_frame_alpha(frame_uv);
+  if (opacity <= .001) { gl_FragColor = vec4(0.); return; }
+  vec3 img = sample_image(img_uv);
   gl_FragColor = vec4(img * opacity, opacity);
 }
 `;

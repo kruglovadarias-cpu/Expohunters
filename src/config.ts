@@ -19,6 +19,7 @@ export const motion = {
   liquidIntensity: 30,
   liquidResolution: 2,
   liquidRadius: 95,
+  liquidFeather: 6, // мягкий край маски, пиксели в каждую сторону
   controlGap: 24,
   scrollSmoothing: 95, // миллисекунды, без задержки начала увеличения
 };

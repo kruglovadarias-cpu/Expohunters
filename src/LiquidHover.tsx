@@ -3,13 +3,14 @@
 import { useEffect, useRef, type RefObject } from 'react';
 import { VERT, FRAG_ADVECT, FRAG_DIVERGENCE, FRAG_PRESSURE, FRAG_GRAD_SUB, FRAG_POINT, FRAG_OUTPUT } from './liquidShaders';
 
-export interface LiquidMotion { dx: number; dy: number; strength?: number }
+export interface LiquidMotion { dx: number; dy: number; strength?: number; paused?: boolean }
 interface Props {
   videoRef: RefObject<HTMLVideoElement | null>;
   motionRef: RefObject<LiquidMotion>;
   resolution: number;
   cursorSize: number;
   intensity: number;
+  feather: number;
 }
 interface Target {
   texture: WebGLTexture;
@@ -21,7 +22,7 @@ interface Target {
 interface DoubleTarget { read: Target; write: Target; swap: () => void }
 interface Program { program: WebGLProgram; uniforms: Record<string, WebGLUniformLocation | null> }
 
-export default function LiquidHover({ videoRef, motionRef, resolution, cursorSize, intensity }: Props) {
+export default function LiquidHover({ videoRef, motionRef, resolution, cursorSize, intensity, feather }: Props) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   useEffect(() => {
     const canvas = canvasRef.current!;
@@ -38,6 +39,7 @@ export default function LiquidHover({ videoRef, motionRef, resolution, cursorSiz
     let raf = 0;
     let disposed = false;
     let uploadedTime = -1;
+    let presentedStrength = -1;
     let imageAspect = 16 / 9;
     let width = 0;
     let height = 0;
@@ -136,23 +138,23 @@ export default function LiquidHover({ videoRef, motionRef, resolution, cursorSiz
 
     const resize = () => {
       if (disposed) return;
-      width = container.clientWidth; height = container.clientHeight;
+      const bounds = container.getBoundingClientRect();
+      width = bounds.width; height = bounds.height;
       if (!width || !height) return;
       const dpr = Math.min(devicePixelRatio || 1, 1.5);
-      const w = Math.max(2, Math.round(width * 1.2 * dpr));
-      const h = Math.max(2, Math.round(height * 1.2 * dpr));
+      const scale = Math.min(1.2 * dpr, (media.videoWidth || 1280) * 1.2 / width);
+      const w = Math.max(2, Math.round(width * scale));
+      const h = Math.max(2, Math.round(height * scale));
       if (canvas.width !== w) canvas.width = w;
       if (canvas.height !== h) canvas.height = h;
       const nextH = Math.round(128 + (resolution - 1) * (512 - 128) / 9);
-      const nextW = Math.round(nextH * width / height);
+      // Поле жидкости не пересоздаётся при каждом изменении пропорций рамки.
+      const nextW = Math.round(nextH * imageAspect);
       if (nextW !== simW || nextH !== simH) {
         deleteTargets(); simW = nextW; simH = nextH;
         velocity = makeDouble(); output = makeDouble(); pressure = makeDouble(); divergence = makeTarget(simW, simH);
       }
     };
-    try { resize(); } catch { dispose(); return; }
-    const observer = new ResizeObserver(() => { try { resize(); } catch { dispose(); } });
-    observer.observe(container);
 
     imageTexture = gl.createTexture();
     gl.activeTexture(gl.TEXTURE0); gl.bindTexture(gl.TEXTURE_2D, imageTexture);
@@ -164,77 +166,85 @@ export default function LiquidHover({ videoRef, motionRef, resolution, cursorSiz
       if (disposed) return;
       raf = requestAnimationFrame(render);
       const dt = Math.min((now - last) / 1000, .033); last = now;
-      if (document.hidden || media.readyState < HTMLMediaElement.HAVE_CURRENT_DATA || !width || !height) return;
-      const strength = motionRef.current.strength ?? 1;
-      if (strength <= .001) {
-        container.dataset.liquid = 'idle';
-        return;
-      }
+      if (document.hidden || media.readyState < HTMLMediaElement.HAVE_CURRENT_DATA) return;
+      // Смена drawing buffer очищает canvas. Обязательно рисуем в том же rAF,
+      // до paint; ResizeObserver после rAF оставлял на экране пустые кадры.
       imageAspect = media.videoWidth / media.videoHeight;
+      const previousWidth = width, previousHeight = height;
+      try { resize(); } catch { dispose(); return; }
+      if (!width || !height) return;
+      const strength = motionRef.current.strength ?? 1;
+      if (motionRef.current.paused && uploadedTime === media.currentTime && strength === presentedStrength
+        && width === previousWidth && height === previousHeight) return;
       if (uploadedTime !== media.currentTime) {
         gl.activeTexture(gl.TEXTURE0); gl.bindTexture(gl.TEXTURE_2D, imageTexture);
-        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, media);
+        if (uploadedTime < 0) gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, media);
+        else gl.texSubImage2D(gl.TEXTURE_2D, 0, 0, 0, gl.RGBA, gl.UNSIGNED_BYTE, media);
         uploadedTime = media.currentTime;
       }
-      const { dx, dy } = motionRef.current;
-      if (Math.abs(dx) + Math.abs(dy) > .04) {
-        gl.useProgram(splat.program);
-        gl.uniform1i(splat.uniforms.u_input_texture, velocity.read.attach(1));
-        gl.uniform1f(splat.uniforms.u_ratio, width / height);
-        gl.uniform2f(splat.uniforms.u_point, .5 - Math.max(-.2, Math.min(.2, dx / 120)), .5 + Math.max(-.2, Math.min(.2, dy / 120)));
-        gl.uniform3f(splat.uniforms.u_point_value, dx * 6, -dy * 6, 0);
-        const radius = cursorSize / height;
-        gl.uniform1f(splat.uniforms.u_point_size, radius * radius);
-        draw(velocity.write); velocity.swap();
-        gl.uniform1i(splat.uniforms.u_input_texture, output.read.attach(1));
-        const power = 5 + ((intensity / 100 - .1) * 45) / .9;
-        gl.uniform3f(splat.uniforms.u_point_value, power * .001, 0, 0);
-        draw(output.write); output.swap();
+      if (strength > .001 && !motionRef.current.paused) {
+        const { dx, dy } = motionRef.current;
+        if (Math.abs(dx) + Math.abs(dy) > .04) {
+          gl.useProgram(splat.program);
+          gl.uniform1i(splat.uniforms.u_input_texture, velocity.read.attach(1));
+          gl.uniform1f(splat.uniforms.u_ratio, width / height);
+          gl.uniform2f(splat.uniforms.u_point, .5 - Math.max(-.2, Math.min(.2, dx / 120)), .5 + Math.max(-.2, Math.min(.2, dy / 120)));
+          gl.uniform3f(splat.uniforms.u_point_value, dx * 6, -dy * 6, 0);
+          const radius = cursorSize / height;
+          gl.uniform1f(splat.uniforms.u_point_size, radius * radius);
+          draw(velocity.write); velocity.swap();
+          gl.uniform1i(splat.uniforms.u_input_texture, output.read.attach(1));
+          const power = 5 + ((intensity / 100 - .1) * 45) / .9;
+          gl.uniform3f(splat.uniforms.u_point_value, power * .001, 0, 0);
+          draw(output.write); output.swap();
+        }
+        gl.useProgram(div.program);
+        gl.uniform2f(div.uniforms.u_texel, 1 / simW, 1 / simH);
+        gl.uniform1i(div.uniforms.u_velocity_texture, velocity.read.attach(1)); draw(divergence);
+        gl.useProgram(press.program);
+        gl.uniform2f(press.uniforms.u_texel, 1 / simW, 1 / simH);
+        gl.uniform1i(press.uniforms.u_divergence_texture, divergence.attach(1));
+        for (let i = 0; i < 8; i++) {
+          gl.uniform1i(press.uniforms.u_pressure_texture, pressure.read.attach(2)); draw(pressure.write); pressure.swap();
+        }
+        gl.useProgram(gradient.program);
+        gl.uniform2f(gradient.uniforms.u_texel, 1 / simW, 1 / simH);
+        gl.uniform1i(gradient.uniforms.u_pressure_texture, pressure.read.attach(1));
+        gl.uniform1i(gradient.uniforms.u_velocity_texture, velocity.read.attach(2)); draw(velocity.write); velocity.swap();
+        gl.useProgram(advect.program);
+        gl.uniform2f(advect.uniforms.u_texel, 1 / simW, 1 / simH);
+        gl.uniform2f(advect.uniforms.u_output_textel, 1 / simW, 1 / simH);
+        gl.uniform1i(advect.uniforms.u_velocity_texture, velocity.read.attach(1));
+        gl.uniform1i(advect.uniforms.u_input_texture, velocity.read.attach(1));
+        gl.uniform1f(advect.uniforms.u_dt, dt);
+        gl.uniform1f(advect.uniforms.u_dissipation, Math.pow(.97, dt * 60)); draw(velocity.write); velocity.swap();
+        gl.uniform1i(advect.uniforms.u_velocity_texture, velocity.read.attach(1));
+        gl.uniform1i(advect.uniforms.u_input_texture, output.read.attach(2));
+        gl.uniform1f(advect.uniforms.u_dt, 8 * dt);
+        gl.uniform1f(advect.uniforms.u_dissipation, Math.pow(.98, dt * 60)); draw(output.write); output.swap();
       }
-      gl.useProgram(div.program);
-      gl.uniform2f(div.uniforms.u_texel, 1 / simW, 1 / simH);
-      gl.uniform1i(div.uniforms.u_velocity_texture, velocity.read.attach(1)); draw(divergence);
-      gl.useProgram(press.program);
-      gl.uniform2f(press.uniforms.u_texel, 1 / simW, 1 / simH);
-      gl.uniform1i(press.uniforms.u_divergence_texture, divergence.attach(1));
-      for (let i = 0; i < 8; i++) {
-        gl.uniform1i(press.uniforms.u_pressure_texture, pressure.read.attach(2)); draw(pressure.write); pressure.swap();
-      }
-      gl.useProgram(gradient.program);
-      gl.uniform2f(gradient.uniforms.u_texel, 1 / simW, 1 / simH);
-      gl.uniform1i(gradient.uniforms.u_pressure_texture, pressure.read.attach(1));
-      gl.uniform1i(gradient.uniforms.u_velocity_texture, velocity.read.attach(2)); draw(velocity.write); velocity.swap();
-      gl.useProgram(advect.program);
-      gl.uniform2f(advect.uniforms.u_texel, 1 / simW, 1 / simH);
-      gl.uniform2f(advect.uniforms.u_output_textel, 1 / simW, 1 / simH);
-      gl.uniform1i(advect.uniforms.u_velocity_texture, velocity.read.attach(1));
-      gl.uniform1i(advect.uniforms.u_input_texture, velocity.read.attach(1));
-      gl.uniform1f(advect.uniforms.u_dt, dt);
-      gl.uniform1f(advect.uniforms.u_dissipation, Math.pow(.97, dt * 60)); draw(velocity.write); velocity.swap();
-      gl.uniform1i(advect.uniforms.u_velocity_texture, velocity.read.attach(1));
-      gl.uniform1i(advect.uniforms.u_input_texture, output.read.attach(2));
-      gl.uniform1f(advect.uniforms.u_dt, 8 * dt);
-      gl.uniform1f(advect.uniforms.u_dissipation, Math.pow(.98, dt * 60)); draw(output.write); output.swap();
       gl.useProgram(display.program);
       gl.uniform1i(display.uniforms.u_velocity_texture, velocity.read.attach(2));
       gl.uniform1i(display.uniforms.u_output_texture, output.read.attach(1));
       gl.uniform1f(display.uniforms.u_ratio, width / height);
       gl.uniform1f(display.uniforms.u_img_ratio, imageAspect);
       gl.uniform1f(display.uniforms.u_disturb_power, intensity / 100 * strength);
+      gl.uniform2f(display.uniforms.u_frame_texel, 1 / width, 1 / height);
+      gl.uniform1f(display.uniforms.u_feather, feather * (.5 + .5 * strength));
       gl.uniform1f(display.uniforms.u_canvas_scale, 1);
       gl.uniform1f(display.uniforms.u_inner_scale, 5 / 6);
       gl.activeTexture(gl.TEXTURE0); gl.bindTexture(gl.TEXTURE_2D, imageTexture);
       gl.uniform1i(display.uniforms.u_text_texture, 0); draw();
+      presentedStrength = strength;
       container.dataset.liquid = 'ready';
     };
     raf = requestAnimationFrame(render);
     const onLost = (event: Event) => { event.preventDefault(); dispose(); };
     canvas.addEventListener('webglcontextlost', onLost);
     return () => {
-      observer.disconnect();
       canvas.removeEventListener('webglcontextlost', onLost);
       dispose();
     };
-  }, [videoRef, motionRef, resolution, cursorSize, intensity]);
+  }, [videoRef, motionRef, resolution, cursorSize, intensity, feather]);
   return <canvas ref={canvasRef} className="liquid-canvas" aria-hidden="true" />;
 }
