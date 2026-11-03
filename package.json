@@ -7,6 +7,7 @@
     "dev": "vite --host 0.0.0.0",
     "build": "tsc -b && vite build",
     "preview": "vite preview --host 0.0.0.0",
+    "deploy:pages": "npm run build && node scripts/publish-pages.mjs",
     "preview:offline": "tsc -b && node scripts/build-offline-preview.mjs",
     "test:offline": "npm run preview:offline && playwright test --config=playwright.offline.config.ts",
     "test": "playwright test"
