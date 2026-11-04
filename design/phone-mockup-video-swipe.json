@@ -1,0 +1,159 @@
+{
+  "file": "docs/downloads/expohunters-mobile-phone-mockup-swipe.mp4",
+  "sourceWebsite": "https://expohunters.com/#top",
+  "previousVersion": "docs/downloads/expohunters-mobile-phone-mockup-paced.mp4",
+  "durationSeconds": 24.866667,
+  "fps": 30,
+  "frameCount": 746,
+  "width": 1024,
+  "height": 1536,
+  "codec": "H.264",
+  "pixelFormat": "yuv420p",
+  "audio": false,
+  "menuFile": "design/mockup-menu.svg",
+  "menuOriginalFileName": "мenu.svg",
+  "menuSha256": "6fe6032295737fd87be67e8669761bd1cec10a6d519ec57fb887415774151b04",
+  "menuAlignment": "center",
+  "menuSizeCssPixels": [
+    343,
+    37
+  ],
+  "viewportCssPixels": [
+    390,
+    800
+  ],
+  "scrollMethod": "Real Chromium touch gestures with ease-in/ease-out finger impulses. Only the portfolio and design traversals are retimed to 1.2 seconds each; all 1-second stops and hero playback remain at normal speed.",
+  "holdSecondsPerBlock": 1,
+  "timing": [
+    {
+      "name": "Главный экран",
+      "transitionStartSeconds": 0.003,
+      "stopStartSeconds": 0.011,
+      "holdSeconds": 1,
+      "scrollCssPixels": 0,
+      "acceleratedTraversal": false
+    },
+    {
+      "name": "Второй экран — видео",
+      "transitionStartSeconds": 1.034,
+      "stopStartSeconds": 2.422,
+      "holdSeconds": 1,
+      "scrollCssPixels": 600,
+      "acceleratedTraversal": false
+    },
+    {
+      "name": "Расчёт стенда",
+      "transitionStartSeconds": 3.434,
+      "stopStartSeconds": 4.093,
+      "holdSeconds": 1,
+      "scrollCssPixels": 1002,
+      "acceleratedTraversal": false
+    },
+    {
+      "name": "Портфолио",
+      "transitionStartSeconds": 5.103,
+      "stopStartSeconds": 6.259,
+      "holdSeconds": 1,
+      "scrollCssPixels": 1803,
+      "acceleratedTraversal": false
+    },
+    {
+      "name": "Производство",
+      "transitionStartSeconds": 7.269,
+      "stopStartSeconds": 8.469,
+      "holdSeconds": 1,
+      "scrollCssPixels": 5426,
+      "acceleratedTraversal": true
+    },
+    {
+      "name": "Помещения",
+      "transitionStartSeconds": 9.498,
+      "stopStartSeconds": 10.776,
+      "holdSeconds": 1,
+      "scrollCssPixels": 6064,
+      "acceleratedTraversal": false
+    },
+    {
+      "name": "Продумываем дизайн под задачи бизнеса",
+      "transitionStartSeconds": 11.786,
+      "stopStartSeconds": 12.889,
+      "holdSeconds": 1,
+      "scrollCssPixels": 6917,
+      "acceleratedTraversal": false
+    },
+    {
+      "name": "Этапы работы",
+      "transitionStartSeconds": 13.898,
+      "stopStartSeconds": 15.098,
+      "holdSeconds": 1,
+      "scrollCssPixels": 9693,
+      "acceleratedTraversal": true
+    },
+    {
+      "name": "О компании",
+      "transitionStartSeconds": 16.112,
+      "stopStartSeconds": 19.07,
+      "holdSeconds": 1,
+      "scrollCssPixels": 12535,
+      "acceleratedTraversal": false
+    },
+    {
+      "name": "Отзывы",
+      "transitionStartSeconds": 20.08,
+      "stopStartSeconds": 21.836,
+      "holdSeconds": 1,
+      "scrollCssPixels": 13927,
+      "acceleratedTraversal": false
+    },
+    {
+      "name": "Контакты и футер",
+      "transitionStartSeconds": 22.857,
+      "stopStartSeconds": 23.86,
+      "holdSeconds": 1,
+      "scrollCssPixels": 15051,
+      "acceleratedTraversal": false
+    }
+  ],
+  "heroVideoVerification": [
+    {
+      "screen": 0,
+      "rect": {
+        "x": 109.203125,
+        "y": 330,
+        "w": 171.59375,
+        "h": 96.515625
+      },
+      "frameDifferences": [
+        17.5,
+        17.955,
+        15.791,
+        16.982,
+        17.344
+      ],
+      "mediaAdvanced": 1.013379,
+      "decodedFrames": 60
+    },
+    {
+      "screen": 1,
+      "rect": {
+        "x": 12,
+        "y": 111.5625,
+        "w": 366,
+        "h": 360
+      },
+      "frameDifferences": [
+        22.821,
+        24.424,
+        27.179,
+        25.331,
+        24.418
+      ],
+      "mediaAdvanced": 1.0032899999999998,
+      "decodedFrames": 60
+    }
+  ],
+  "finalScrollCssPixels": 15051,
+  "maxScrollCssPixels": 15051,
+  "sizeBytes": 5729502,
+  "sha256": "a6654d8c8895b694f7c6821daec6f11994d8d59d52e6c004e737808ba8be3551"
+}
