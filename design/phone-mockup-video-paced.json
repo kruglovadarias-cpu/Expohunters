@@ -1,0 +1,174 @@
+{
+  "file": "docs/downloads/expohunters-mobile-phone-mockup-paced.mp4",
+  "sourceWebsite": "https://expohunters.com/#top",
+  "previousVersion": "docs/downloads/expohunters-mobile-phone-mockup-7s.mp4",
+  "durationSeconds": 49,
+  "fps": 30,
+  "frameCount": 1470,
+  "width": 1024,
+  "height": 1536,
+  "codec": "H.264",
+  "audio": false,
+  "menuFile": "design/mockup-menu.svg",
+  "menuOriginalFileName": "мenu.svg",
+  "menuSha256": "6fe6032295737fd87be67e8669761bd1cec10a6d519ec57fb887415774151b04",
+  "menuAlignment": "center",
+  "menuSizeCssPixels": [
+    343,
+    37
+  ],
+  "viewportCssPixels": [
+    390,
+    800
+  ],
+  "timing": [
+    {
+      "name": "Главный экран",
+      "y": 0,
+      "hold": 3,
+      "move": 0
+    },
+    {
+      "name": "Второй экран — видео",
+      "y": 600,
+      "hold": 3,
+      "move": 1.1
+    },
+    {
+      "name": "Расчёт стенда",
+      "selector": "#calculator",
+      "hold": 2.5,
+      "y": 1138.078125,
+      "move": 1.1
+    },
+    {
+      "name": "Портфолио",
+      "selector": "#projects",
+      "hold": 2,
+      "y": 1939.421875,
+      "move": 1.2
+    },
+    {
+      "name": "Производство",
+      "selector": "#production",
+      "hold": 2.5,
+      "fast": true,
+      "y": 5562.859375,
+      "move": 2.6
+    },
+    {
+      "name": "Помещения",
+      "selector": "#premises",
+      "hold": 2.5,
+      "y": 6200.578125,
+      "move": 1.1
+    },
+    {
+      "name": "Дизайн",
+      "selector": "#design",
+      "hold": 2.5,
+      "y": 7053.390625,
+      "move": 1.3
+    },
+    {
+      "name": "Этапы работы",
+      "selector": "#stages",
+      "hold": 2.5,
+      "y": 9829.59375,
+      "move": 4.3
+    },
+    {
+      "name": "О компании",
+      "selector": "#about",
+      "hold": 2.5,
+      "y": 12671.75,
+      "move": 4.4
+    },
+    {
+      "name": "Отзывы",
+      "selector": "#reviews",
+      "hold": 2.5,
+      "y": 14063.40625,
+      "move": 2.1
+    },
+    {
+      "name": "Контакты и футер",
+      "bottom": true,
+      "hold": 2.5999999999999943,
+      "y": 15187,
+      "move": 1.7
+    }
+  ],
+  "captureStops": [
+    {
+      "name": "Главный экран",
+      "time": 0.0025999999940395356,
+      "y": 0,
+      "hold": 3
+    },
+    {
+      "name": "Второй экран — видео",
+      "time": 4.118,
+      "y": 600,
+      "hold": 3
+    },
+    {
+      "name": "Расчёт стенда",
+      "time": 8.23479999999702,
+      "y": 1002,
+      "hold": 2.5
+    },
+    {
+      "name": "Портфолио",
+      "time": 12.01909999999404,
+      "y": 1803,
+      "hold": 2
+    },
+    {
+      "name": "Производство",
+      "time": 16.63859999999404,
+      "y": 5426,
+      "hold": 2.5
+    },
+    {
+      "name": "Помещения",
+      "time": 20.261700000002982,
+      "y": 6064,
+      "hold": 2.5
+    },
+    {
+      "name": "Дизайн",
+      "time": 24.08820000000298,
+      "y": 6917,
+      "hold": 2.5
+    },
+    {
+      "name": "Этапы работы",
+      "time": 30.899599999994038,
+      "y": 9693,
+      "hold": 2.5
+    },
+    {
+      "name": "О компании",
+      "time": 37.81579999999702,
+      "y": 12535,
+      "hold": 2.5
+    },
+    {
+      "name": "Отзывы",
+      "time": 42.434,
+      "y": 13927,
+      "hold": 2.5
+    },
+    {
+      "name": "Контакты и футер",
+      "time": 46.658099999994036,
+      "y": 15051,
+      "hold": 2.5999999999999943
+    }
+  ],
+  "finalScrollCssPixels": 15051,
+  "maxScrollCssPixels": 15051,
+  "sizeBytes": 12231428,
+  "sha256": "8bf1fcc340ad98ae712ece6e6992ba404ddfb6f941582e32dd3791ddc7a0c0a8"
+}
