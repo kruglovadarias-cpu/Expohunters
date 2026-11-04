@@ -1,0 +1,14 @@
+{
+  "sourceUrl": "https://expohunters.com/videos/szhatoe-korotkoe-video-montazh.mp4",
+  "section": "Производство",
+  "file": "docs/downloads/expo-hunters-production.mp4",
+  "sha256": "b252acdb14b27427e5b68851db2169304a63781a04f12363eddf678e71a6c904",
+  "sizeBytes": 10924238,
+  "width": 1280,
+  "height": 720,
+  "fps": 30,
+  "durationSeconds": 32.809002,
+  "videoCodec": "H.264",
+  "audioCodec": "AAC",
+  "processing": "Original MP4 copied byte for byte; no re-encoding or audio removal."
+}
