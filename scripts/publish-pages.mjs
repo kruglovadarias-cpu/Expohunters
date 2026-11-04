@@ -7,8 +7,9 @@ import { fileURLToPath } from 'node:url';
 
 const run = promisify(execFile);
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
-const remote = 'https://github.com/kruglovadarias-cpu/balance-website.git';
 const git = (cwd, ...args) => run('git', args, { cwd, maxBuffer: 10 * 1024 * 1024 });
+const { stdout: origin } = await git(root, 'remote', 'get-url', 'origin');
+const remote = origin.trim();
 const temporary = await mkdtemp(join(tmpdir(), 'expo-pages-'));
 const publication = join(temporary, 'repository');
 
@@ -35,7 +36,7 @@ try {
     await git(publication, 'push', 'origin', 'HEAD:refs/heads/gh-pages');
     console.log('Updated gh-pages. GitHub Pages will publish this build.');
   }
-  console.log('Site: https://kruglovadarias-cpu.github.io/balance-website/');
+  console.log('GitHub Pages publishes gh-pages. The current site URL is listed in repository Settings → Pages.');
 } finally {
   await rm(temporary, { recursive: true, force: true });
 }
