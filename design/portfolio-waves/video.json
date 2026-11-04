@@ -1,0 +1,91 @@
+{
+  "width": 1080,
+  "height": 1350,
+  "durationSeconds": 8,
+  "fps": 60,
+  "card": {
+    "width": 797,
+    "height": 538,
+    "x": 141.5,
+    "y": 406
+  },
+  "waves": {
+    "horizontal": 12,
+    "horizontalSecondary": 3.5,
+    "vertical": 8,
+    "verticalSecondary": 2
+  },
+  "encoding": {
+    "crf": 17,
+    "preset": "fast"
+  },
+  "file": "docs/downloads/expohunters-portfolio-waves-8s.mp4",
+  "frameCount": 480,
+  "codec": "H.264",
+  "pixelFormat": "yuv420p",
+  "audio": false,
+  "loop": true,
+  "effect": "Smooth periodic waves applied only to the foreground card and its outline",
+  "background": "One stationary image, including all background typography and grain",
+  "animatedRegionBounds": [
+    122,
+    387,
+    958,
+    963
+  ],
+  "backgroundMaxPixelDifferenceBeforeEncoding": 0,
+  "consecutiveForegroundFrameDifferenceMin": 1.7247813939836967,
+  "consecutiveForegroundFrameDifferenceMedian": 2.1059090078415736,
+  "sources": {
+    "background.png": "11345d9a80d742e3829556ec113bc943aabdaf3d1348ab8e84e2b84f9e354912",
+    "foreground.png": "46f7ec0362215b99f5c9eaaf0556355c50e4629f547ad94be844da6e98f0151f",
+    "config.json": "2cfaec58f7a70465a66555286ac6bb09d3e534a1afbc7746448ed32c51e19621"
+  },
+  "sizeBytes": 5179267,
+  "sha256": "fa7af81a2bc190d340f4eae0322f7875c687964d4410e294af3c14d58bd49308",
+  "verification": {
+    "probe": {
+      "programs": [],
+      "stream_groups": [],
+      "streams": [
+        {
+          "codec_name": "h264",
+          "width": 1080,
+          "height": 1350,
+          "pix_fmt": "yuv420p",
+          "r_frame_rate": "60/1",
+          "nb_read_frames": "480"
+        }
+      ],
+      "format": {
+        "duration": "8.000000"
+      }
+    },
+    "headingAndBackgroundSamples": [
+      {
+        "frame": 60,
+        "titleMeanPixelChange": 81.62635978195033,
+        "backgroundMeanPixelChange": 0.6507384467493595
+      },
+      {
+        "frame": 120,
+        "titleMeanPixelChange": 81.15324853624067,
+        "backgroundMeanPixelChange": 0.6553687591145193
+      },
+      {
+        "frame": 240,
+        "titleMeanPixelChange": 53.72050070664244,
+        "backgroundMeanPixelChange": 0.6579580336124357
+      },
+      {
+        "frame": 360,
+        "titleMeanPixelChange": 77.38779325661216,
+        "backgroundMeanPixelChange": 0.6610999825219704
+      }
+    ],
+    "loopSeamMeanPixelChange": 3.3284281964380646,
+    "firstFrameStepMeanPixelChange": 2.3948475987949673,
+    "lastFrameStepMeanPixelChange": 2.4217234017809677,
+    "backgroundUnchangedBeforeEncoding": true
+  }
+}
