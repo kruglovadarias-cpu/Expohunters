@@ -1,0 +1,39 @@
+{
+  "file": "docs/downloads/expohunters-mobile-phone-mockup-7s.mp4",
+  "sourceWebsite": "https://expohunters.com/#top",
+  "mockup": "User-provided orange chair phone mockup, with existing screen text removed",
+  "durationSeconds": 7,
+  "fps": 30,
+  "frameCount": 210,
+  "width": 1024,
+  "height": 1536,
+  "codec": "H.264",
+  "pixelFormat": "yuv420p",
+  "audio": false,
+  "scroll": "Entire mobile website from top to footer",
+  "viewportCssPixels": [
+    390,
+    800
+  ],
+  "phoneScreenSafeTopCssPixels": 44,
+  "phoneScreenQuadrilateral": [
+    [
+      99.18193375548724,
+      684.0305791776536
+    ],
+    [
+      352.17211937255166,
+      459.47939068017024
+    ],
+    [
+      913.244545367939,
+      886.9781864831344
+    ],
+    [
+      654.2357858438636,
+      1123.751484911071
+    ]
+  ],
+  "sizeBytes": 3004899,
+  "sha256": "31ae4cc16edf0e33d42a23c0d9086066592f535ccf0807aab2fca7b7776e9f56"
+}
