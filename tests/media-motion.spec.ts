@@ -60,7 +60,7 @@ test('увеличение начинается сразу, идёт посте�
   expect(playback.paused).toBe(false);
   await page.evaluate(() => scrollTo({ top: 0, behavior: 'instant' }));
   await expect(panel).toHaveAttribute('data-mode', 'follow');
-  await expect.poll(async () => (await panel.boundingBox())!.width).toBeLessThan(400);
+  await expect.poll(async () => (await panel.boundingBox())!.width).toBeCloseTo(552, 0);
   await expect(video).toHaveAttribute('data-instance', 'original');
   await expect(page.locator('video')).toHaveCount(1);
 });
@@ -107,9 +107,9 @@ test('чёткие края без растушёвки и пустых кадр
   await expect(page.locator('.project-floating')).toHaveAttribute('data-liquid', 'ready');
 });
 
-test('половина интенсивности фотоэталона сохраняет видимое видео при резком движении', async ({ page }) => {
+test('сниженная до 40% интенсивность сохраняет видимое видео при резком движении', async ({ page }) => {
   await ready(page);
-  await expect(page.locator('.project-floating')).toHaveAttribute('data-intensity', '43');
+  await expect(page.locator('.project-floating')).toHaveAttribute('data-intensity', '17.2');
   for (const [x, y] of [[100, 120], [1300, 800], [200, 700], [1200, 150], [300, 500]]) {
     await page.mouse.move(x, y, { steps: 2 });
     await page.waitForTimeout(80);

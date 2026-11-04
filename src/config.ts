@@ -10,16 +10,17 @@ export const site = {
   socials: { WA: '', TG: '', MAX: '' },
 };
 
-// В присланном index.html у фотографии значение 86. Смещение уменьшаем вдвое.
+// Фотоэталон: 86. Текущий эффект — 40% от предыдущего значения 43.
 const photoReferenceIntensity = 86;
 export const motion = {
   introDuration: 1100,
   revealDuration: 1500,
   marqueeSpeed: 78, // пикселей в секунду
-  followerWidth: 368,
+  followerWidth: 368 * 1.5,
+  followerViewportRatio: .256 * 1.5,
   followerSmoothing: 0.085,
   liquidReferenceIntensity: photoReferenceIntensity,
-  liquidIntensity: photoReferenceIntensity * .5,
+  liquidIntensity: photoReferenceIntensity * .5 * .4,
   liquidResolution: 2,
   liquidRadius: 95,
   controlGap: 24,

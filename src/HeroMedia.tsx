@@ -47,7 +47,7 @@ export default function HeroMedia({ hero, ready, paused, reduced }: Props) {
     let pointer = { x: size.w * .69, y: size.h * .57 };
     let center = { ...pointer };
     let previousCenter = { ...center };
-    let rect: Rect = { x: 0, y: 0, w: Math.min(size.w * .256, motion.followerWidth) * .36, h: 0 };
+    let rect: Rect = { x: 0, y: 0, w: Math.min(size.w * motion.followerViewportRatio, motion.followerWidth) * .36, h: 0 };
     rect.h = rect.w * 9 / 16;
     let origin: Rect | null = null;
     let progress = 0;
@@ -107,7 +107,7 @@ export default function HeroMedia({ hero, ready, paused, reduced }: Props) {
         rect = { x: mix(origin.x, pad, progress), y: mix(origin.y, mobile ? 16 : 36, progress),
           w: mix(origin.w, targetWidth, progress), h: mix(origin.h, targetHeight, progress) };
       } else {
-        const nominalWidth = mobile ? Math.min(size.w - 64, motion.followerWidth) : Math.min(size.w * .256, motion.followerWidth);
+        const nominalWidth = mobile ? Math.min(size.w - 64, motion.followerWidth) : Math.min(size.w * motion.followerViewportRatio, motion.followerWidth);
         const baseWidth = Math.min(nominalWidth, Math.max(1, lowerEdge - upperEdge) * 16 / 9);
         const appearance = smooth((now - started - 300) / 1050);
         rect.w = mix(rect.w, baseWidth * mix(.36, 1, appearance), 1 - Math.exp(-dt / 70));

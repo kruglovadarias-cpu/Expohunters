@@ -59,7 +59,7 @@ test('вступление, следование за курсором, жидк
   await page.screenshot({ path: 'test-results/second-screen.png' });
   await page.evaluate(() => scrollTo({ top: 0, behavior: 'instant' }));
   await expect(image).toHaveAttribute('data-mode', 'follow');
-  await expect.poll(async () => (await image.boundingBox())!.width).toBeLessThan(400);
+  await expect.poll(async () => (await image.boundingBox())!.width).toBeCloseTo(552, 0);
   await page.getByRole('button', { name: 'Остановить движение' }).click();
   await expect(page.getByRole('button', { name: 'Продолжить движение' })).toBeVisible();
   await page.screenshot({ path: 'test-results/first-screen.png' });
