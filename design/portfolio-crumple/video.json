@@ -1,0 +1,82 @@
+{
+  "width": 1080,
+  "height": 1350,
+  "durationSeconds": 8,
+  "fps": 60,
+  "card": {
+    "width": 797,
+    "height": 538
+  },
+  "mesh": {
+    "columns": 32,
+    "rows": 22,
+    "foldAxisDegrees": 27,
+    "maxFold": 1,
+    "compactVolumeScale": 1.35
+  },
+  "timeline": {
+    "sketchHoldEnd": 1.25,
+    "crumpleEnd": 3.1,
+    "designChangeStart": 3.15,
+    "designChangeEnd": 3.4,
+    "unfoldStart": 3.5,
+    "unfoldEnd": 5.8
+  },
+  "encoding": {
+    "crf": 17,
+    "preset": "fast"
+  },
+  "sourceSketch": "design/portfolio-waves/foreground.png",
+  "sourceFinished": "design/portfolio-crumple/finished.png",
+  "sourceBackground": "design/portfolio-waves/background.png",
+  "file": "docs/downloads/expohunters-portfolio-paper-transition-8s.mp4",
+  "frameCount": 480,
+  "codec": "H.264",
+  "pixelFormat": "yuv420p",
+  "audio": false,
+  "effect": "One continuous textured 3D paper mesh crumples at center and unfolds into the finished project",
+  "sequence": [
+    "flat sketch",
+    "crumple",
+    "change print only while fully crumpled",
+    "unfold finished project",
+    "flat finished project"
+  ],
+  "background": "Stationary image",
+  "renderer": "llvmpipe (LLVM 19.1.7, 256 bits)",
+  "sources": {
+    "sourceSketch": "46f7ec0362215b99f5c9eaaf0556355c50e4629f547ad94be844da6e98f0151f",
+    "sourceFinished": "c8b3000ea837bb306df0106002652a9ee45081722f3ca7e979927d8c967eaf68",
+    "sourceBackground": "11345d9a80d742e3829556ec113bc943aabdaf3d1348ab8e84e2b84f9e354912"
+  },
+  "sizeBytes": 2200872,
+  "sha256": "e2b45e9b564337a6a2dec1dc6a3d248642fc643caba107c2be82f042ce2eb1b5",
+  "verification": {
+    "durationSeconds": 8,
+    "fps": 60,
+    "frameCount": 480,
+    "sequenceVerified": [
+      "sketch first",
+      "design changes only while fully crumpled",
+      "finished project while unfolding",
+      "fully flat finished project last"
+    ],
+    "flatBounds": [
+      141,
+      406,
+      939,
+      944
+    ],
+    "compactBounds": [
+      484,
+      626,
+      593,
+      750
+    ],
+    "compactToFlatBoundingAreaRatio": 0.031482050852037154,
+    "initialRedPixels": 0,
+    "finalRedPixels": 19259,
+    "backgroundUnchangedBeforeEncoding": true,
+    "encodedBackgroundMeanPixelDifference": 0.0915966536260698
+  }
+}
