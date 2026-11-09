@@ -4,6 +4,7 @@ import LiquidHover, { type LiquidMotion } from './LiquidHover';
 
 interface Props {
   hero: RefObject<HTMLElement | null>;
+  header: RefObject<HTMLElement | null>;
   ready: boolean;
   paused: boolean;
   reduced: boolean;
@@ -20,7 +21,7 @@ function topWithin(element: HTMLElement, ancestor: HTMLElement) {
   return top;
 }
 
-export default function HeroMedia({ hero, ready, paused, reduced }: Props) {
+export default function HeroMedia({ hero, header, ready, paused, reduced }: Props) {
   const card = useRef<HTMLDivElement>(null);
   const video = useRef<HTMLVideoElement>(null);
   const liquidMotion = useRef<LiquidMotion>({ dx: 0, dy: 0, strength: 1 });
@@ -64,8 +65,7 @@ export default function HeroMedia({ hero, ready, paused, reduced }: Props) {
       const old = size;
       size = { w: panel.parentElement?.clientWidth || innerWidth, h: innerHeight, hero: firstScreen.offsetHeight };
       mobile = size.w < 760 || matchMedia('(pointer: coarse)').matches;
-      const header = firstScreen.querySelector<HTMLElement>('.header');
-      upperEdge = Math.max(100, (header ? topWithin(header, firstScreen) + header.offsetHeight : 76) + motion.controlGap);
+      upperEdge = Math.max(100, (header.current?.offsetHeight ?? 76) + motion.controlGap);
       const button = firstScreen.querySelector<HTMLElement>('.project-cta');
       cta = button ? { right: button.offsetLeft + button.offsetWidth, top: topWithin(button, firstScreen) } : { right: 0, top: size.h };
       lowerEdge = size.h - motion.controlGap;
@@ -79,7 +79,8 @@ export default function HeroMedia({ hero, ready, paused, reduced }: Props) {
     measure();
     const observer = new ResizeObserver(measure);
     observer.observe(firstScreen);
-    for (const el of firstScreen.querySelectorAll<HTMLElement>('.header, .project-cta')) observer.observe(el);
+    if (header.current) observer.observe(header.current);
+    for (const el of firstScreen.querySelectorAll<HTMLElement>('.project-cta')) observer.observe(el);
     window.addEventListener('resize', measure);
     const move = (e: PointerEvent) => {
       if (e.isPrimary && e.pointerType === 'mouse') pointer = { x: e.clientX, y: e.clientY };
@@ -103,8 +104,8 @@ export default function HeroMedia({ hero, ready, paused, reduced }: Props) {
       if (origin) {
         // Все четыре величины используют один прогресс: рамка растёт сразу со скроллом.
         const targetWidth = size.w - 2 * pad;
-        const targetHeight = mobile ? Math.min(size.h - 32, targetWidth * 9 / 16) : Math.min(size.h - 65, targetWidth * .55);
-        rect = { x: mix(origin.x, pad, progress), y: mix(origin.y, mobile ? 16 : 36, progress),
+        const targetHeight = Math.max(1, Math.min(size.h - upperEdge - pad, targetWidth * (mobile ? 9 / 16 : .55)));
+        rect = { x: mix(origin.x, pad, progress), y: mix(origin.y, upperEdge, progress),
           w: mix(origin.w, targetWidth, progress), h: mix(origin.h, targetHeight, progress) };
       } else {
         const nominalWidth = mobile ? Math.min(size.w - 64, motion.followerWidth) : Math.min(size.w * motion.followerViewportRatio, motion.followerWidth);
@@ -142,7 +143,7 @@ export default function HeroMedia({ hero, ready, paused, reduced }: Props) {
       window.removeEventListener('resize', measure);
       window.removeEventListener('pointermove', move);
     };
-  }, [ready, reduced, hero]);
+  }, [ready, reduced, hero, header]);
 
   return <div className="media-viewport"><div className="project-floating" ref={card} data-intensity={motion.liquidIntensity}>
     <video ref={video} className="project-video" src={site.projectVideo} aria-label={site.projectVideoLabel}

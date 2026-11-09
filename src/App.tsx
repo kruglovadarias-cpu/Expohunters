@@ -41,6 +41,7 @@ export default function App() {
   const [briefPrepared, setBriefPrepared] = useState(false);
   const [preparedEmail, setPreparedEmail] = useState('');
   const hero = useRef<HTMLElement>(null);
+  const header = useRef<HTMLElement>(null);
   const track = useRef<HTMLDivElement>(null);
   const dialog = useRef<HTMLDialogElement>(null);
 
@@ -53,6 +54,18 @@ export default function App() {
     document.documentElement.classList.toggle('is-intro', !ready);
     return () => document.documentElement.classList.remove('is-intro');
   }, [ready]);
+
+  useEffect(() => {
+    if (!header.current) return;
+    const measure = () => document.documentElement.style.setProperty('--header-height', `${header.current!.offsetHeight}px`);
+    measure();
+    const observer = new ResizeObserver(measure);
+    observer.observe(header.current);
+    return () => {
+      observer.disconnect();
+      document.documentElement.style.removeProperty('--header-height');
+    };
+  }, []);
 
   useEffect(() => {
     if (!ready || !hero.current || !track.current) return;
@@ -109,8 +122,7 @@ export default function App() {
   return <div className={`site ${ready ? 'is-ready' : ''} ${paused ? 'is-paused' : ''}`}>
     <a className="skip-link" href="#main">К содержимому</a>
     {!ready && <div className="intro" role="status" aria-label="Загрузка Expo Hunters"><Logo light /></div>}
-    <section className="hero" ref={hero} id="main" aria-label="Выставочные стенды">
-      <header className="header reveal" style={{ '--delay': '0ms' } as React.CSSProperties}>
+      <header ref={header} className="header reveal" style={{ '--delay': '0ms' } as React.CSSProperties}>
         <a className="brand" href="#main" aria-label="Expo Hunters — на первый экран"><Logo /></a>
         <nav className="nav-primary" aria-label="Основная навигация">
           <a href="#projects">Проекты</a>
@@ -127,6 +139,7 @@ export default function App() {
         </div>
         <button className="mobile-menu" aria-label="Открыть меню и контакты" onClick={() => openDialog('contacts')}>Меню <Arrow diagonal /></button>
       </header>
+    <section className="hero" ref={hero} id="main" aria-label="Выставочные стенды">
       <main>
         <div className="marquee-window"><div className="marquee-track" ref={track}><MarqueeUnit /><MarqueeUnit duplicate /></div></div>
         <button className="project-cta reveal" style={{ '--delay': '450ms' } as React.CSSProperties} onClick={() => openDialog('brief')}>ОБСУДИТЬ ПРОЕКТ<Arrow /></button>
@@ -153,7 +166,7 @@ export default function App() {
     </section>
     <section id="projects" className="project-section" aria-label="Видео выставочных стендов Expo Hunters">
       <h2 className="sr-only">Выставочные стенды Expo Hunters</h2>
-      <HeroMedia hero={hero} ready={ready} paused={paused} reduced={reduced} />
+      <HeroMedia hero={hero} header={header} ready={ready} paused={paused} reduced={reduced} />
     </section>
     <button className="motion-toggle" onClick={() => setPaused(!paused)} aria-pressed={paused}
       aria-label={paused ? 'Продолжить движение' : 'Остановить движение'} title={paused ? 'Продолжить движение' : 'Остановить движение'}>

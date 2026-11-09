@@ -21,7 +21,7 @@ button:focus-visible, a:focus-visible { outline: 2px solid var(--red); outline-o
 .intro .logo { width: min(403px, 72vw); animation: intro-logo .7s ease both; }
 @keyframes intro-logo { from { opacity: 0; transform: translateY(7px); } to { opacity: 1; transform: none; } }
 .hero { height: 100svh; min-height: 740px; position: relative; overflow: clip; }
-.header { position: relative; z-index: 12; padding: 32px 20px 0; display: grid; grid-template-columns: 355fr 347fr 246fr 271fr 181fr; gap: 0; align-items: start; font-size: 16px; font-weight: 500; line-height: 1.2; }
+.header { position: fixed; top: 0; left: 0; right: 0; z-index: 12; padding: 32px 20px 0; background: var(--paper); display: grid; grid-template-columns: 355fr 347fr 246fr 271fr 181fr; gap: 0; align-items: start; font-size: 16px; font-weight: 500; line-height: 1.2; }
 .brand { display: inline-flex; width: min(247px, 19vw); }
 .logo { width: 100%; height: auto; display: block; }
 .nav-primary, .nav-secondary, .header-contacts { display: flex; flex-direction: column; align-items: flex-start; }
@@ -122,8 +122,8 @@ body:has(dialog[open]) { overflow: hidden; }
   *, *::before, *::after { animation-duration: .001ms !important; animation-delay: 0ms !important; transition-duration: .001ms !important; }
   .reveal { opacity: 1; transform: none; }
   .motion-toggle { display: none; }
-  .project-section { display: grid; place-items: center; padding: 20px; }
+  .project-section { display: grid; place-items: center; padding: calc(var(--header-height, 76px) + 20px) 20px 20px; }
   .media-viewport { position: static; width: 100%; overflow: visible; }
   .project-floating { position: static; width: 100% !important; height: auto !important; transform: none !important; opacity: 1; pointer-events: auto; }
-  .project-video { max-height: calc(100svh - 40px); }
+  .project-video { max-height: calc(100svh - var(--header-height, 76px) - 40px); }
 }
