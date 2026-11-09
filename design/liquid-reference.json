@@ -2,11 +2,11 @@
   "sourceFileName": "index.html",
   "sourceSha256": "05ae929c2d0cb703870c0d8d2e994362dccbf3387e2b4ce1306dcc971a259a9c",
   "referenceIntensity": 86,
-  "requestedGain": 0.2,
-  "appliedIntensity": 17.2,
+  "requestedGain": 0.5,
+  "appliedIntensity": 43,
   "fluidFieldIntensity": 86,
   "contentToContourDisplacementRatio": 2,
-  "notes": "Preserve the reference fluid input; final displacement is 40% of the previous 43, or 20% of the reference 86. No feathering or blur.",
-  "previousAppliedIntensity": 43,
-  "relativeGainFromPrevious": 0.4
+  "notes": "Restore the former displacement strength: 50% of the reference 86, or 2.5 times the reduced 17.2. Preserve the reference fluid input. No feathering or blur.",
+  "previousAppliedIntensity": 17.2,
+  "relativeGainFromPrevious": 2.5
 }

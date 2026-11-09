@@ -10,7 +10,7 @@ export const site = {
   socials: { WA: '', TG: '', MAX: '' },
 };
 
-// Фотоэталон: 86. Текущий эффект — 40% от предыдущего значения 43.
+// Фотоэталон: 86. Возвращаем прежнюю силу эффекта — половину эталона.
 const photoReferenceIntensity = 86;
 export const motion = {
   introDuration: 1100,
@@ -20,7 +20,7 @@ export const motion = {
   followerViewportRatio: .256 * 1.5,
   followerSmoothing: 0.085,
   liquidReferenceIntensity: photoReferenceIntensity,
-  liquidIntensity: photoReferenceIntensity * .5 * .4,
+  liquidIntensity: photoReferenceIntensity * .5,
   liquidResolution: 2,
   liquidRadius: 95,
   controlGap: 24,

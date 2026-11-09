@@ -107,9 +107,9 @@ test('чёткие края без растушёвки и пустых кадр
   await expect(page.locator('.project-floating')).toHaveAttribute('data-liquid', 'ready');
 });
 
-test('сниженная до 40% интенсивность сохраняет видимое видео при резком движении', async ({ page }) => {
+test('прежняя интенсивность сохраняет видимое видео при резком движении', async ({ page }) => {
   await ready(page);
-  await expect(page.locator('.project-floating')).toHaveAttribute('data-intensity', '17.2');
+  await expect(page.locator('.project-floating')).toHaveAttribute('data-intensity', '43');
   for (const [x, y] of [[100, 120], [1300, 800], [200, 700], [1200, 150], [300, 500]]) {
     await page.mouse.move(x, y, { steps: 2 });
     await page.waitForTimeout(80);
